@@ -1,0 +1,135 @@
+@import "tailwindcss";
+@import "fumadocs-ui/css/neutral.css";
+@import "fumadocs-ui/css/preset.css";
+
+/* ===== THEMES DE COULEUR ===== */
+/* Utilise @layer pour surcharger les variables de @theme de fumadocs */
+
+@layer theme {
+    /* ===== ROUGE ===== */
+    body[data-theme="red"] {
+        --color-fd-primary: hsl(0, 80%, 38%);
+        --color-fd-primary-foreground: hsl(0, 0%, 100%);
+        --color-fd-accent: hsl(0, 60%, 95%);
+        --color-fd-accent-foreground: hsl(0, 80%, 32%);
+        --color-fd-ring: hsl(0, 80%, 38%);
+    }
+
+    .dark body[data-theme="red"],
+    body.dark[data-theme="red"] {
+        --color-fd-primary: hsl(0, 70%, 45%);
+        --color-fd-accent: hsl(0, 50%, 15%);
+        --color-fd-accent-foreground: hsl(0, 70%, 65%);
+        --color-fd-ring: hsl(0, 70%, 55%);
+    }
+
+    /* ===== VERT ===== */
+    body[data-theme="green"] {
+        --color-fd-primary: hsl(142, 71%, 35%);
+        --color-fd-primary-foreground: hsl(0, 0%, 100%);
+        --color-fd-accent: hsl(142, 60%, 95%);
+        --color-fd-accent-foreground: hsl(142, 71%, 28%);
+        --color-fd-ring: hsl(142, 71%, 35%);
+    }
+
+    .dark body[data-theme="green"],
+    body.dark[data-theme="green"] {
+        --color-fd-primary: hsl(142, 60%, 50%);
+        --color-fd-accent: hsl(142, 40%, 15%);
+        --color-fd-accent-foreground: hsl(142, 60%, 60%);
+        --color-fd-ring: hsl(142, 60%, 50%);
+    }
+
+    /* ===== BLEU ===== */
+    body[data-theme="blue"] {
+        --color-fd-primary: hsl(230, 80%, 50%);
+        --color-fd-primary-foreground: hsl(0, 0%, 100%);
+        --color-fd-accent: hsl(230, 70%, 95%);
+        --color-fd-accent-foreground: hsl(230, 70%, 42%);
+        --color-fd-ring: hsl(230, 80%, 50%);
+    }
+
+    .dark body[data-theme="blue"],
+    body.dark[data-theme="blue"] {
+        --color-fd-primary: hsl(230, 80%, 65%);
+        --color-fd-primary-foreground: hsl(0, 0%, 100%);
+        --color-fd-accent: hsl(230, 40%, 20%);
+        --color-fd-accent-foreground: hsl(230, 80%, 75%);
+        --color-fd-ring: hsl(230, 80%, 65%);
+    }
+
+    /* ===== VIOLET ===== */
+    body[data-theme="purple"] {
+        --color-fd-primary: hsl(256, 55%, 45%);
+        --color-fd-primary-foreground: hsl(0, 0%, 100%);
+        --color-fd-accent: hsl(256, 60%, 95%);
+        --color-fd-accent-foreground: hsl(256, 55%, 38%);
+        --color-fd-ring: hsl(256, 55%, 45%);
+    }
+
+    .dark body[data-theme="purple"],
+    body.dark[data-theme="purple"] {
+        --color-fd-primary: hsl(270, 75%, 55%);
+        --color-fd-primary-foreground: hsl(0, 0%, 100%);
+        --color-fd-accent: hsl(256, 23%, 22%);
+        --color-fd-accent-foreground: hsl(270, 75%, 65%);
+        --color-fd-ring: hsl(270, 75%, 55%);
+    }
+
+    /* ===== NOIR ===== */
+    body[data-theme="black"] {
+        --color-fd-primary: hsl(0, 0%, 9%);
+        --color-fd-primary-foreground: hsl(0, 0%, 98%);
+        --color-fd-accent: hsl(0, 0%, 94.1%);
+        --color-fd-accent-foreground: hsl(0, 0%, 9%);
+        --color-fd-ring: hsl(0, 0%, 63.9%);
+    }
+
+    .dark body[data-theme="black"],
+    body.dark[data-theme="black"] {
+        --color-fd-primary: hsl(0, 0%, 98%);
+        --color-fd-primary-foreground: hsl(0, 0%, 9%);
+        --color-fd-accent: hsl(0, 0%, 15%);
+        --color-fd-accent-foreground: hsl(0, 0%, 100%);
+        --color-fd-ring: hsl(0, 0%, 34.9%);
+    }
+
+    /* ===== ORANGE ===== */
+    body[data-theme="orange"] {
+        --color-fd-primary: hsl(25, 95%, 40%);
+        --color-fd-primary-foreground: hsl(0, 0%, 100%);
+        --color-fd-accent: hsl(25, 80%, 95%);
+        --color-fd-accent-foreground: hsl(25, 95%, 35%);
+        --color-fd-ring: hsl(25, 95%, 40%);
+    }
+
+    .dark body[data-theme="orange"],
+    body.dark[data-theme="orange"] {
+        --color-fd-primary: hsl(25, 95%, 40%);
+        --color-fd-accent: hsl(25, 50%, 15%);
+        --color-fd-accent-foreground: hsl(25, 95%, 70%);
+        --color-fd-ring: hsl(25, 95%, 40%);
+    }
+
+    /* ===== CYAN ===== */
+    body[data-theme="cyan"] {
+        --color-fd-primary: hsl(185, 80%, 40%);
+        --color-fd-primary-foreground: hsl(0, 0%, 100%);
+        --color-fd-accent: hsl(185, 70%, 95%);
+        --color-fd-accent-foreground: hsl(185, 80%, 30%);
+        --color-fd-ring: hsl(185, 80%, 40%);
+    }
+
+    .dark body[data-theme="cyan"],
+    body.dark[data-theme="cyan"] {
+        --color-fd-primary: hsl(185, 80%, 55%);
+        --color-fd-accent: hsl(185, 40%, 18%);
+        --color-fd-accent-foreground: hsl(185, 80%, 65%);
+        --color-fd-ring: hsl(185, 80%, 55%);
+    }
+}
+
+/* Augmente l'epaisseur de la border au hover sur les cards */
+a.group:hover {
+    border-width: 2px !important;
+}

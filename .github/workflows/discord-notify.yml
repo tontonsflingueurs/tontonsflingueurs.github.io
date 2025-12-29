@@ -1,0 +1,106 @@
+name: Discord Notification
+
+on:
+  # Se declenche apres le deploy GitHub Pages
+  workflow_run:
+    workflows: ["pages-build-deployment"]
+    types: [completed]
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - name: Detect content changes
+        id: changes
+        run: |
+          WIKI_CHANGES=$(git diff --name-status HEAD~1 -- 'content/wiki/**/*.mdx' 2>/dev/null || echo "")
+          BLOG_CHANGES=$(git diff --name-status HEAD~1 -- 'content/blog/articles/*.mdx' 2>/dev/null || echo "")
+
+          echo "wiki_changes<<EOF" >> $GITHUB_OUTPUT
+          echo "$WIKI_CHANGES" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+          echo "blog_changes<<EOF" >> $GITHUB_OUTPUT
+          echo "$BLOG_CHANGES" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+          if [ -n "$WIKI_CHANGES" ] || [ -n "$BLOG_CHANGES" ]; then
+            echo "has_content_changes=true" >> $GITHUB_OUTPUT
+          else
+            echo "has_content_changes=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Send Discord notification
+        if: steps.changes.outputs.has_content_changes == 'true'
+        env:
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          WIKI_CHANGES: ${{ steps.changes.outputs.wiki_changes }}
+          BLOG_CHANGES: ${{ steps.changes.outputs.blog_changes }}
+        run: |
+          BASE_URL="https://tontonsflingueurs.github.io"
+
+          FIELDS="[]"
+
+          # Wiki changes
+          if [ -n "$WIKI_CHANGES" ]; then
+            WIKI_FIELD=""
+            while IFS=$'\t' read -r status filepath; do
+              [ -z "$filepath" ] && continue
+              TITLE=$(grep -m1 '^title:' "$filepath" 2>/dev/null | sed 's/title: *"\?\([^"]*\)"\?/\1/' || echo "$filepath")
+              SLUG=$(echo "$filepath" | sed 's|content/wiki/||;s|\.mdx$||;s|/index$||')
+              [ -z "$SLUG" ] && URL="$BASE_URL/wiki" || URL="$BASE_URL/wiki/$SLUG"
+              if [ "$status" = "A" ]; then
+                WIKI_FIELD="${WIKI_FIELD}• [Nouveau] ${TITLE}\n${URL}\n"
+              else
+                WIKI_FIELD="${WIKI_FIELD}• [Modifie] ${TITLE}\n${URL}\n"
+              fi
+            done <<< "$WIKI_CHANGES"
+
+            if [ -n "$WIKI_FIELD" ]; then
+              FIELDS=$(echo "$FIELDS" | jq --arg name "📚 Wiki" --arg value "$WIKI_FIELD" '. += [{"name": $name, "value": $value}]')
+            fi
+          fi
+
+          # Blog changes
+          if [ -n "$BLOG_CHANGES" ]; then
+            BLOG_FIELD=""
+            while IFS=$'\t' read -r status filepath; do
+              [ -z "$filepath" ] && continue
+              TITLE=$(grep -m1 '^title:' "$filepath" 2>/dev/null | sed 's/title: *"\?\([^"]*\)"\?/\1/' || echo "$filepath")
+              SLUG=$(echo "$filepath" | sed 's|content/blog/articles/||;s|\.mdx$||')
+              URL="$BASE_URL/blog/$SLUG"
+              if [ "$status" = "A" ]; then
+                BLOG_FIELD="${BLOG_FIELD}• [Nouveau] ${TITLE}\n${URL}\n"
+              else
+                BLOG_FIELD="${BLOG_FIELD}• [Modifie] ${TITLE}\n${URL}\n"
+              fi
+            done <<< "$BLOG_CHANGES"
+
+            if [ -n "$BLOG_FIELD" ]; then
+              FIELDS=$(echo "$FIELDS" | jq --arg name "📰 Blog" --arg value "$BLOG_FIELD" '. += [{"name": $name, "value": $value}]')
+            fi
+          fi
+
+          # Send Discord webhook
+          PAYLOAD=$(jq -n \
+            --argjson fields "$FIELDS" \
+            '{
+              "embeds": [{
+                "title": "🚀 Mise à jour du site !",
+                "color": 15158332,
+                "fields": $fields,
+                "footer": {"text": "Tontons Flingueurs"},
+                "timestamp": (now | todate)
+              }]
+            }')
+
+          curl -X POST "$DISCORD_WEBHOOK_URL" \
+            -H "Content-Type: application/json" \
+            -d "$PAYLOAD"
