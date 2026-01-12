@@ -18,7 +18,7 @@ export const blogSource = loader({
 });
 
 export function getPageImage(page: InferPageType<typeof source>) {
-  const segments = [...page.slugs, "image.png"];
+  const segments = [...page.slugs, "image.webp"];
 
   return {
     segments,
@@ -27,7 +27,7 @@ export function getPageImage(page: InferPageType<typeof source>) {
 }
 
 export function getBlogPageImage(page: InferPageType<typeof blogSource>) {
-  const segments = [...page.slugs, "image.png"];
+  const segments = [...page.slugs, "image.webp"];
 
   return {
     segments,

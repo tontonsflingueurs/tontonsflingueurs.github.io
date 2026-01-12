@@ -1,4 +1,4 @@
-export const DEFAULT_AVATAR = '/logo.png';
+export const DEFAULT_AVATAR = '/logo.webp';
 
 export const authors = {
   mathias: {
@@ -20,7 +20,7 @@ export function getAuthor(id: string): Author | null {
 
 export function getAvatarUrl(github: string | undefined): string {
   if (!github) return DEFAULT_AVATAR;
-  return `https://github.com/${github}.png`;
+  return `https://github.com/${github}.webp`;
 }
 
 export function getAuthorsFromIds(ids: string[]): (Author & { id: string })[] {

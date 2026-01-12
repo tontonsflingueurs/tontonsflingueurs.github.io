@@ -78,7 +78,7 @@ title: "Article Title"
 description: "Short description"
 date: "2025-01-03"
 authors: [mathias]
-image: /blog/image.png
+image: /blog/image.webp
 tags: [tag1, tag2]
 ```
 

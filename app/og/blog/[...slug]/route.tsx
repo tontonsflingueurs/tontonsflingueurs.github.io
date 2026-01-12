@@ -16,7 +16,12 @@ function getLocalImageAsDataUrl(imagePath: string): string {
   try {
     const imageBuffer = readFileSync(fullPath);
     const ext = imagePath.split(".").pop()?.toLowerCase() || "png";
-    const mimeType = ext === "jpg" || ext === "jpeg" ? "image/jpeg" : `image/${ext}`;
+    let mimeType = `image/${ext}`;
+    if (ext === "jpg" || ext === "jpeg") {
+      mimeType = "image/jpeg";
+    } else if (ext === "webp") {
+      mimeType = "image/webp";
+    }
     return `data:${mimeType};base64,${imageBuffer.toString("base64")}`;
   } catch {
     // Fallback si l'image n'existe pas
@@ -37,7 +42,9 @@ export async function GET(req: Request, { params }: RouteContext<"/og/blog/[...s
   if (!page) notFound();
 
   const imagePath = page.data.image || DEFAULT_IMAGE;
-  const imageDataUrl = getLocalImageAsDataUrl(imagePath);
+  // Skip WebP images due to ImageResponse limitations with WebP data URLs
+  const isWebP = imagePath.endsWith(".webp");
+  const imageDataUrl = !isWebP ? getLocalImageAsDataUrl(imagePath) : "";
 
   // Si l'article a une image, on l'affiche avec un overlay pour le titre
   return new ImageResponse(
@@ -105,6 +112,6 @@ export async function GET(req: Request, { params }: RouteContext<"/og/blog/[...s
 // Pre-genere les images OG au build pour tous les articles
 export function generateStaticParams() {
   return blogSource.getPages().map((page) => ({
-    slug: [...page.slugs, "image.png"],
+    slug: [...page.slugs, "image.webp"],
   }));
 }

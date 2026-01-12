@@ -10,7 +10,7 @@ import { ImageResponse } from "next/og";
  * Twitter/X, Facebook, LinkedIn, etc.
  *
  * Exemple: partager https://tonsite.com/wiki/guides/premier-guide
- * affichera une image generee par /og/wiki/guides/premier-guide.png
+ * affichera une image generee par /og/wiki/guides/premier-guide.webp
  * avec le titre et la description de la page.
  *
  * Pour personnaliser l'apparence, remplacer DefaultImage par un composant custom.
