@@ -10,6 +10,7 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://tontonsflingueurs.github.io"),
   title: "Tontons Flingueurs",
   description: "Wiki et blog communautaire des Tontons Flingueurs",
   openGraph: {
