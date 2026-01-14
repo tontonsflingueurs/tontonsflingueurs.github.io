@@ -1,43 +1,74 @@
 # ttf-wiki
 
-This is a Next.js application generated with
-[Create Fumadocs](https://github.com/fuma-nama/fumadocs).
+<div align="center">
 
-Run development server:
+[![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/tontonsflingueurs/tontonsflingueurs.github.io/deploy.yml?branch=main&label=build)](https://github.com/tontonsflingueurs/tontonsflingueurs.github.io/actions) [![GitHub deployments](https://img.shields.io/github/deployments/tontonsflingueurs/tontonsflingueurs.github.io/github-pages?label=pages)](https://tontonsflingueurs.github.io/) [![GitHub package.json version](https://img.shields.io/github/package-json/v/tontonsflingueurs/tontonsflingueurs.github.io)](https://github.com/tontonsflingueurs/tontonsflingueurs.github.io/releases)
+
+</div>
+
+![Banniere](./public/wiki/banniere.webp)
+
+## À propos
+
+Wiki communautaire pour **Tontons Flingueurs**, une plateforme collaborative où la communauté partage guides, stratégies et conseils. Le contenu est maintenu par une équipe de rédacteurs et graphistes passionnés.
+
+**🌐 Voir le wiki en ligne : https://tontonsflingueurs.github.io/**
+
+## 🚀 Démarrage rapide
 
 ```bash
-npm run dev
-# or
+# Installation
+bun install
+
+# Développement
 bun dev
+
+# Build production
+bun bundle
+
+# Optimiser les images (PNG → WebP)
+bun run img:optimize
 ```
 
-Open http://localhost:3000 with your browser to see the result.
+Ouvert sur http://localhost:3000
 
-## Explore
+## 📖 Documentation
 
-In the project, you can see:
+- **[Guide de développement](./docs/DEVELOPMENT.md)** - Architecture, structure du projet, configuration
+- **[Guide de contribution](./docs/CONTRIBUTING.md)** - Comment contribuer au wiki (2 méthodes)
 
-- `lib/source.ts`: Code for content source adapter, [`loader()`](https://fumadocs.dev/docs/headless/source-api) provides the interface to access your content.
-- `lib/layout.shared.tsx`: Shared options for layouts, optional but preferred to keep.
+## ✨ Remerciements
 
-| Route                     | Description                                            |
-| ------------------------- | ------------------------------------------------------ |
-| `app/(home)`              | The route group for your landing page and other pages. |
-| `app/wiki`                | The documentation layout and pages.                    |
-| `app/api/search/route.ts` | The Route Handler for search.                          |
+Remerciements dans l'élaboration de ce Wiki :
 
-### Fumadocs MDX
+**Le développeur:**
 
-A `source.config.ts` config file has been included, you can customise different options like frontmatter schema.
+- Mahzazel
 
-Read the [Introduction](https://fumadocs.dev/docs/mdx) for further details.
+**L'équipe rédactrice:**
 
-## Learn More
+- Iokee (iokee)
+- Perpi-Lyonnais
+- Skykha
+- Mahzazel
+- Dag
 
-To learn more about Next.js and Fumadocs, take a look at the following
-resources:
+**L'équipe graphique:**
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js
-  features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-- [Fumadocs](https://fumadocs.dev) - learn about Fumadocs
+- Zeld
+- Phiona
+- Thalia
+- Pulse
+
+## 🤝 Contribution
+
+Les contributions sont les bienvenues ! Consultez le [guide de contribution](./docs/CONTRIBUTING.md) pour deux approches :
+
+- **Via GitHub Web** : Simple, pas besoin de dev
+- **En local** : Pour les développeurs
+
+Toutes les contributions doivent être validées avant acceptation.
+
+## 📜 Licence
+
+Ce projet est sous licence **[CC BY-NC-ND 4.0](LICENSE)** (Attribution - Pas d'Utilisation Commerciale - Pas de Modification sans validation).

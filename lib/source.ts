@@ -1,4 +1,4 @@
-import { type InferPageType, loader } from "fumadocs-core/source";
+import { loader } from "fumadocs-core/source";
 import { lucideIconsPlugin } from "fumadocs-core/source/lucide-icons";
 import { blog, docs } from "fumadocs-mdx:collections/server";
 
@@ -16,21 +16,3 @@ export const blogSource = loader({
   source: blog.toFumadocsSource(),
   plugins: [lucideIconsPlugin()],
 });
-
-export function getPageImage(page: InferPageType<typeof source>) {
-  const segments = [...page.slugs, "image.webp"];
-
-  return {
-    segments,
-    url: `/og/wiki/${segments.join("/")}`,
-  };
-}
-
-export function getBlogPageImage(page: InferPageType<typeof blogSource>) {
-  const segments = [...page.slugs, "image.webp"];
-
-  return {
-    segments,
-    url: `/og/blog/${segments.join("/")}`,
-  };
-}

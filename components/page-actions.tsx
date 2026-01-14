@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "fumadocs-core/link";
 import { buttonVariants } from "fumadocs-ui/components/ui/button";
 import { useCopyButton } from "fumadocs-ui/utils/use-copy-button";
 import { Check, Copy, ExternalLinkIcon } from "lucide-react";
@@ -14,13 +15,11 @@ interface PageActionsProps {
 
 export function PageActions({ markdownUrl, githubUrl }: PageActionsProps) {
   return (
-    <div className="flex items-center gap-2">
+    <div className="flex items-center gap-2 w-">
       <CopyMarkdownButton markdownUrl={markdownUrl} />
-      {/* eslint-disable-next-line @next/next/no-html-link-for-pages */}
-      <a
+      <Link
         href={githubUrl}
-        target="_blank"
-        rel="noopener noreferrer"
+        external
         className={buttonVariants({
           color: "secondary",
           size: "sm",
@@ -30,7 +29,7 @@ export function PageActions({ markdownUrl, githubUrl }: PageActionsProps) {
         <GitHubIcon />
         Ouvrir sur GitHub
         <ExternalLinkIcon className="text-fd-muted-foreground" />
-      </a>
+      </Link>
     </div>
   );
 }

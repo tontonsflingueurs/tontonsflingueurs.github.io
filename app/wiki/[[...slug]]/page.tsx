@@ -1,5 +1,6 @@
-import { getPageImage, source } from "@/lib/source";
+import { source } from "@/lib/source";
 import { getMDXComponents } from "@/mdx-components";
+import { DEFAULT_WIKI_IMAGE } from "@/utils/constants";
 import { createRelativeLink } from "fumadocs-ui/mdx";
 import { DocsBody, DocsDescription, DocsPage, DocsTitle, PageLastUpdate } from "fumadocs-ui/page";
 import type { Metadata } from "next";
@@ -20,6 +21,13 @@ export default async function Page(props: PageProps) {
 
   return (
     <DocsPage toc={page.data.toc} tableOfContent={{ style: "clerk" }} full={page.data.full}>
+      {page.data.image && (
+        <img
+          src={page.data.image}
+          alt={page.data.title}
+          className="w-[calc(100%)] max-w-none h-auto object-contain mb-2"
+        />
+      )}
       <DocsTitle>{page.data.title}</DocsTitle>
       <DocsDescription>{page.data.description}</DocsDescription>
       <DocsBody>
@@ -47,11 +55,21 @@ export async function generateMetadata(props: PageProps): Promise<Metadata> {
   const page = source.getPage(params.slug);
   if (!page) notFound();
 
+  const imageUrl = page.data.image || DEFAULT_WIKI_IMAGE;
+
   return {
     title: page.data.title,
     description: page.data.description,
     openGraph: {
-      images: getPageImage(page).url,
+      title: page.data.title,
+      description: page.data.description,
+      images: [{ url: imageUrl }],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: page.data.title,
+      description: page.data.description,
+      images: [imageUrl],
     },
   };
 }

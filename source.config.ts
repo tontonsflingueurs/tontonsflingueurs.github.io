@@ -11,11 +11,16 @@ const blogFrontmatterSchema = frontmatterSchema.extend({
   tags: z.array(z.string()).optional(),
 });
 
+// Schema etendu pour le wiki (avec image optionnelle)
+const wikiFrontmatterSchema = frontmatterSchema.extend({
+  image: z.string().optional(),
+});
+
 // Collection Wiki (docs)
 export const docs = defineDocs({
   dir: "content/wiki",
   docs: {
-    schema: frontmatterSchema,
+    schema: wikiFrontmatterSchema,
   },
   meta: {
     schema: metaSchema,

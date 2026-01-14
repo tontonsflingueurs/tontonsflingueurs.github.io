@@ -12,6 +12,17 @@ const inter = Inter({
 export const metadata: Metadata = {
   title: "Tontons Flingueurs",
   description: "Wiki et blog communautaire des Tontons Flingueurs",
+  openGraph: {
+    title: "Tontons Flingueurs",
+    description: "Wiki et blog communautaire des Tontons Flingueurs",
+    images: [{ url: "/wiki/banniere.webp" }],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Tontons Flingueurs",
+    description: "Wiki et blog communautaire des Tontons Flingueurs",
+    images: ["/wiki/banniere.webp"],
+  },
 };
 
 // Script pour appliquer le theme avant l'hydratation (evite le flash)

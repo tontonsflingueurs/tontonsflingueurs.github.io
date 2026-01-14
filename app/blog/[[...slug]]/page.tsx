@@ -1,8 +1,8 @@
 import { PageActions } from "@/components/page-actions";
 import { ZoomableImage } from "@/components/zoomable-image";
-import { blogSource, getBlogPageImage } from "@/lib/source";
+import { blogSource } from "@/lib/source";
 import { getMDXComponents } from "@/mdx-components";
-import { DEFAULT_IMAGE, GITHUB_REPO } from "@/utils/constants";
+import { DEFAULT_BLOG_IMAGE, GITHUB_REPO } from "@/utils/constants";
 import { estimateReadingTime } from "@/utils/reading-time";
 import { DocsBody, DocsDescription, DocsPage, DocsTitle, PageLastUpdate } from "fumadocs-ui/page";
 import type { Metadata } from "next";
@@ -19,9 +19,9 @@ export default async function BlogPostPage(props: PageProps) {
   const lastModifiedTime = page.data.lastModified;
 
   const MDX = page.data.body;
-  const imageUrl = page.data.image || DEFAULT_IMAGE;
+  const imageUrl = page.data.image || DEFAULT_BLOG_IMAGE;
   const slugPath = page.slugs.length === 0 ? "index" : page.slugs.join("/");
-  const githubEditUrl = `${GITHUB_REPO}/tree/main/blog/${slugPath}.mdx`;
+  const githubEditUrl = `${GITHUB_REPO}/tree/main/content/blog/${slugPath}.mdx`;
 
   // Page d'index du blog (pas d'article)
   const isIndexPage = !params.slug || params.slug.length === 0;
@@ -42,26 +42,28 @@ export default async function BlogPostPage(props: PageProps) {
       <ZoomableImage src={imageUrl} alt={page.data.title} variant="banner" />
 
       <DocsTitle>{page.data.title}</DocsTitle>
-      <div className="flex items-center gap-2 text-sm text-fd-muted-foreground -mt-2">
-        {page.data.date && (
-          <time dateTime={page.data.date}>
-            {new Date(page.data.date).toLocaleDateString("fr-FR", {
-              year: "numeric",
-              month: "long",
-              day: "numeric",
-              timeZone: "UTC",
-            })}
-          </time>
-        )}
-        <span>•</span>
-        <span>{estimateReadingTime(page.data.structuredData)} min de lecture</span>
-        {page.data.authors && page.data.authors.length > 0 && (
-          <>
-            <span>•</span>
-            <span>par {page.data.authors.join(", ")}</span>
-          </>
-        )}
-        <PageActions markdownUrl={`${page.url}.mdx`} githubUrl={githubEditUrl} />
+      <div className="flex flex-col lg:flex-row lg:flex-wrap lg:items-center gap-2 text-sm text-fd-muted-foreground -mt-2">
+        <div className="flex flex-wrap items-center gap-2">
+          {page.data.date && (
+            <time dateTime={page.data.date}>
+              {new Date(page.data.date).toLocaleDateString("fr-FR", {
+                year: "numeric",
+                month: "long",
+                day: "numeric",
+                timeZone: "UTC",
+              })}
+            </time>
+          )}
+          <span>•</span>
+          <span>{estimateReadingTime(page.data.structuredData)} min de lecture</span>
+          {page.data.authors && page.data.authors.length > 0 && (
+            <>
+              <span>•</span>
+              <span>par {page.data.authors.join(", ")}</span>
+            </>
+          )}
+        </div>
+        <PageActions markdownUrl={`/api/raw${page.url}`} githubUrl={githubEditUrl} />
       </div>
       <DocsDescription className="-mb-1">{page.data.description}</DocsDescription>
 
@@ -85,7 +87,7 @@ export async function generateMetadata(props: PageProps): Promise<Metadata> {
   const page = blogSource.getPage(params.slug);
   if (!page) notFound();
 
-  const ogImage = getBlogPageImage(page);
+  const imageUrl = page.data.image || DEFAULT_BLOG_IMAGE;
 
   return {
     title: page.data.title,
@@ -93,13 +95,13 @@ export async function generateMetadata(props: PageProps): Promise<Metadata> {
     openGraph: {
       title: page.data.title,
       description: page.data.description,
-      images: [{ url: ogImage.url, width: 1200, height: 630 }],
+      images: [{ url: imageUrl }],
     },
     twitter: {
       card: "summary_large_image",
       title: page.data.title,
       description: page.data.description,
-      images: [ogImage.url],
+      images: [imageUrl],
     },
   };
 }

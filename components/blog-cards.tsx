@@ -2,7 +2,7 @@
 
 import { blogSource } from "@/lib/source";
 import { DEFAULT_AVATAR, getAuthorsFromIds, getAvatarUrl } from "@/utils/authors";
-import { DEFAULT_IMAGE } from "@/utils/constants";
+import { DEFAULT_BLOG_IMAGE } from "@/utils/constants";
 import { estimateReadingTime } from "@/utils/reading-time";
 import type { StructuredData } from "fumadocs-core/mdx-plugins";
 import Image from "next/image";
@@ -24,7 +24,7 @@ interface BlogPost {
 function BlogCard({ post }: { post: BlogPost }) {
   const readingTime = estimateReadingTime(post.data.structuredData);
   const authors = post.data.authors ? getAuthorsFromIds(post.data.authors) : [];
-  const imageUrl = post.data.image || DEFAULT_IMAGE;
+  const imageUrl = post.data.image || DEFAULT_BLOG_IMAGE;
 
   return (
     <Link
