@@ -93,7 +93,7 @@ jobs:
               MOD_FIELDS=$(echo "$MOD_FIELDS" | jq --arg name "📚 Wiki" --arg value "$WIKI_MOD" '. += [{"name": $name, "value": $value}]')
             fi
             if [ -n "$WIKI_MOD" ] && [ -n "$BLOG_MOD" ]; then
-              MOD_FIELDS=$(echo "$MOD_FIELDS" | jq '. += [{"name": "\u200B", "value": "\u200B"}]')
+              MOD_FIELDS=$(echo "$MOD_FIELDS" | jq '. += [{"name": "\u200B", "value": ""}]')
             fi
             if [ -n "$BLOG_MOD" ]; then
               MOD_FIELDS=$(echo "$MOD_FIELDS" | jq --arg name "📰 Blog" --arg value "$BLOG_MOD" '. += [{"name": $name, "value": $value}]')
@@ -108,7 +108,7 @@ jobs:
               NEW_FIELDS=$(echo "$NEW_FIELDS" | jq --arg name "📚 Wiki" --arg value "$WIKI_NEW" '. += [{"name": $name, "value": $value}]')
             fi
             if [ -n "$WIKI_NEW" ] && [ -n "$BLOG_NEW" ]; then
-              NEW_FIELDS=$(echo "$NEW_FIELDS" | jq '. += [{"name": "\u200B", "value": "\u200B"}]')
+              NEW_FIELDS=$(echo "$NEW_FIELDS" | jq '. += [{"name": "\u200B", "value": ""}]')
             fi
             if [ -n "$BLOG_NEW" ]; then
               NEW_FIELDS=$(echo "$NEW_FIELDS" | jq --arg name "📰 Blog" --arg value "$BLOG_NEW" '. += [{"name": $name, "value": $value}]')
