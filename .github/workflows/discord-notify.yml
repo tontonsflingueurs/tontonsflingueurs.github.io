@@ -3,7 +3,7 @@ name: Discord Notification
 on:
   # Se declenche apres le deploy GitHub Pages
   workflow_run:
-    workflows: ['Deploy to GitHub Pages']
+    workflows: ["Deploy to GitHub Pages"]
     types: [completed]
 
 jobs:
@@ -59,12 +59,17 @@ jobs:
               [ -z "$filepath" ] && continue
               # Ignorer les fichiers supprimes (D) car ils n'existent plus
               [ "$status" = "D" ] && continue
+              # Pour les renames (R*), filepath contient "ancien\tnouveau", on prend le nouveau
+              if [[ "$status" == R* ]]; then
+                filepath=$(echo "$filepath" | cut -f2)
+              fi
               TITLE=$(grep -m1 '^title:' "$filepath" 2>/dev/null | sed 's/title: *"\?\([^"]*\)"\?/\1/')
               # Si pas de titre trouve, ignorer ce fichier
               [ -z "$TITLE" ] && continue
               SLUG=$(echo "$filepath" | sed 's|content/wiki/||;s|\.mdx$||;s|/index$||')
               [ -z "$SLUG" ] && URL="$BASE_URL/wiki" || URL="$BASE_URL/wiki/$SLUG"
-              if [ "$status" = "A" ]; then
+              # A = Added, R* = Renamed (R100, R087, etc.)
+              if [ "$status" = "A" ] || [[ "$status" == R* ]]; then
                 WIKI_NEW="${WIKI_NEW}• ${TITLE}${NEWLINE}${URL}${NEWLINE}"
               else
                 WIKI_MOD="${WIKI_MOD}• ${TITLE}${NEWLINE}${URL}${NEWLINE}"
@@ -78,12 +83,17 @@ jobs:
               [ -z "$filepath" ] && continue
               # Ignorer les fichiers supprimes (D) car ils n'existent plus
               [ "$status" = "D" ] && continue
+              # Pour les renames (R*), filepath contient "ancien\tnouveau", on prend le nouveau
+              if [[ "$status" == R* ]]; then
+                filepath=$(echo "$filepath" | cut -f2)
+              fi
               TITLE=$(grep -m1 '^title:' "$filepath" 2>/dev/null | sed 's/title: *"\?\([^"]*\)"\?/\1/')
               # Si pas de titre trouve, ignorer ce fichier
               [ -z "$TITLE" ] && continue
               SLUG=$(echo "$filepath" | sed 's|content/blog/articles/||;s|\.mdx$||')
               URL="$BASE_URL/blog/$SLUG"
-              if [ "$status" = "A" ]; then
+              # A = Added, R* = Renamed (R100, R087, etc.)
+              if [ "$status" = "A" ] || [[ "$status" == R* ]]; then
                 BLOG_NEW="${BLOG_NEW}• ${TITLE}${NEWLINE}${URL}${NEWLINE}"
               else
                 BLOG_MOD="${BLOG_MOD}• ${TITLE}${NEWLINE}${URL}${NEWLINE}"
