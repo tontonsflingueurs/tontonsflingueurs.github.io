@@ -3,7 +3,7 @@ name: Discord Notification
 on:
   # Se declenche apres le deploy GitHub Pages
   workflow_run:
-    workflows: ["Deploy to GitHub Pages"]
+    workflows: ['Deploy to GitHub Pages']
     types: [completed]
 
 jobs:
@@ -47,63 +47,84 @@ jobs:
           BASE_URL="https://tontonsflingueurs.github.io"
           NEWLINE=$'\n'
 
-          FIELDS="[]"
+          # Variables pour grouper par action (nouveau/modifie) puis par type (wiki/blog)
+          WIKI_NEW=""
+          WIKI_MOD=""
+          BLOG_NEW=""
+          BLOG_MOD=""
 
-          # Wiki changes
+          # Traitement des changements Wiki
           if [ -n "$WIKI_CHANGES" ]; then
-            WIKI_FIELD=""
             while IFS=$'\t' read -r status filepath; do
               [ -z "$filepath" ] && continue
               TITLE=$(grep -m1 '^title:' "$filepath" 2>/dev/null | sed 's/title: *"\?\([^"]*\)"\?/\1/' || echo "$filepath")
               SLUG=$(echo "$filepath" | sed 's|content/wiki/||;s|\.mdx$||;s|/index$||')
               [ -z "$SLUG" ] && URL="$BASE_URL/wiki" || URL="$BASE_URL/wiki/$SLUG"
               if [ "$status" = "A" ]; then
-                WIKI_FIELD="${WIKI_FIELD}• [Nouveau] ${TITLE}${NEWLINE}${URL}${NEWLINE}"
+                WIKI_NEW="${WIKI_NEW}• ${TITLE}${NEWLINE}${URL}${NEWLINE}"
               else
-                WIKI_FIELD="${WIKI_FIELD}• [Modifie] ${TITLE}${NEWLINE}${URL}${NEWLINE}"
+                WIKI_MOD="${WIKI_MOD}• ${TITLE}${NEWLINE}${URL}${NEWLINE}"
               fi
             done <<< "$WIKI_CHANGES"
-
-            if [ -n "$WIKI_FIELD" ]; then
-              FIELDS=$(echo "$FIELDS" | jq --arg name "📚 Wiki" --arg value "$WIKI_FIELD" '. += [{"name": $name, "value": $value}]')
-            fi
           fi
 
-          # Blog changes
+          # Traitement des changements Blog
           if [ -n "$BLOG_CHANGES" ]; then
-            BLOG_FIELD=""
             while IFS=$'\t' read -r status filepath; do
               [ -z "$filepath" ] && continue
               TITLE=$(grep -m1 '^title:' "$filepath" 2>/dev/null | sed 's/title: *"\?\([^"]*\)"\?/\1/' || echo "$filepath")
               SLUG=$(echo "$filepath" | sed 's|content/blog/articles/||;s|\.mdx$||')
               URL="$BASE_URL/blog/$SLUG"
               if [ "$status" = "A" ]; then
-                BLOG_FIELD="${BLOG_FIELD}• [Nouveau] ${TITLE}${NEWLINE}${URL}${NEWLINE}"
+                BLOG_NEW="${BLOG_NEW}• ${TITLE}${NEWLINE}${URL}${NEWLINE}"
               else
-                BLOG_FIELD="${BLOG_FIELD}• [Modifie] ${TITLE}${NEWLINE}${URL}${NEWLINE}"
+                BLOG_MOD="${BLOG_MOD}• ${TITLE}${NEWLINE}${URL}${NEWLINE}"
               fi
             done <<< "$BLOG_CHANGES"
+          fi
 
-            if [ -n "$BLOG_FIELD" ]; then
-              FIELDS=$(echo "$FIELDS" | jq --arg name "📰 Blog" --arg value "$BLOG_FIELD" '. += [{"name": $name, "value": $value}]')
+          # Construction des embeds separes
+          EMBEDS="[]"
+
+          # Embed pour les modifications
+          if [ -n "$WIKI_MOD" ] || [ -n "$BLOG_MOD" ]; then
+            MOD_FIELDS="[]"
+            if [ -n "$WIKI_MOD" ]; then
+              MOD_FIELDS=$(echo "$MOD_FIELDS" | jq --arg name "📚 Wiki" --arg value "$WIKI_MOD" '. += [{"name": $name, "value": $value}]')
             fi
+            if [ -n "$WIKI_MOD" ] && [ -n "$BLOG_MOD" ]; then
+              MOD_FIELDS=$(echo "$MOD_FIELDS" | jq '. += [{"name": "\u200B", "value": "\u200B"}]')
+            fi
+            if [ -n "$BLOG_MOD" ]; then
+              MOD_FIELDS=$(echo "$MOD_FIELDS" | jq --arg name "📰 Blog" --arg value "$BLOG_MOD" '. += [{"name": $name, "value": $value}]')
+            fi
+            EMBEDS=$(echo "$EMBEDS" | jq --argjson fields "$MOD_FIELDS" '. += [{"title": "✏️ Modifié", "color": 15105570, "fields": $fields}]')
+          fi
+
+          # Embed pour les nouveautes
+          if [ -n "$WIKI_NEW" ] || [ -n "$BLOG_NEW" ]; then
+            NEW_FIELDS="[]"
+            if [ -n "$WIKI_NEW" ]; then
+              NEW_FIELDS=$(echo "$NEW_FIELDS" | jq --arg name "📚 Wiki" --arg value "$WIKI_NEW" '. += [{"name": $name, "value": $value}]')
+            fi
+            if [ -n "$WIKI_NEW" ] && [ -n "$BLOG_NEW" ]; then
+              NEW_FIELDS=$(echo "$NEW_FIELDS" | jq '. += [{"name": "\u200B", "value": "\u200B"}]')
+            fi
+            if [ -n "$BLOG_NEW" ]; then
+              NEW_FIELDS=$(echo "$NEW_FIELDS" | jq --arg name "📰 Blog" --arg value "$BLOG_NEW" '. += [{"name": $name, "value": $value}]')
+            fi
+            EMBEDS=$(echo "$EMBEDS" | jq --argjson fields "$NEW_FIELDS" '. += [{"title": "🆕 Nouveau", "color": 5763719, "fields": $fields}]')
           fi
 
           # Send Discord webhook avec @everyone
           PAYLOAD=$(jq -n \
-            --argjson fields "$FIELDS" \
+            --argjson embeds "$EMBEDS" \
             '{
-              "content": "@everyone",
+              "content": "@everyone **🚀 Mise à jour du site !**",
               "allowed_mentions": {
                 "parse": ["everyone"]
               },
-              "embeds": [{
-                "title": "🚀 Mise à jour du site !",
-                "color": 15158332,
-                "fields": $fields,
-                "footer": {"text": "Tontons Flingueurs"},
-                "timestamp": (now | todate)
-              }]
+              "embeds": $embeds
             }')
 
           curl -X POST "$DISCORD_WEBHOOK_URL" \
