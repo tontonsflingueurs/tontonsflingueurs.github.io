@@ -3,7 +3,7 @@ name: Discord Notification
 on:
   # Se declenche apres le deploy GitHub Pages
   workflow_run:
-    workflows: ['Deploy to GitHub Pages']
+    workflows: ["Deploy to GitHub Pages"]
     types: [completed]
 
 jobs:
@@ -45,6 +45,7 @@ jobs:
           BLOG_CHANGES: ${{ steps.changes.outputs.blog_changes }}
         run: |
           BASE_URL="https://tontonsflingueurs.github.io"
+          NEWLINE=$'\n'
 
           FIELDS="[]"
 
@@ -57,9 +58,9 @@ jobs:
               SLUG=$(echo "$filepath" | sed 's|content/wiki/||;s|\.mdx$||;s|/index$||')
               [ -z "$SLUG" ] && URL="$BASE_URL/wiki" || URL="$BASE_URL/wiki/$SLUG"
               if [ "$status" = "A" ]; then
-                WIKI_FIELD="${WIKI_FIELD}• [Nouveau] ${TITLE}\n${URL}\n"
+                WIKI_FIELD="${WIKI_FIELD}• [Nouveau] ${TITLE}${NEWLINE}${URL}${NEWLINE}"
               else
-                WIKI_FIELD="${WIKI_FIELD}• [Modifie] ${TITLE}\n${URL}\n"
+                WIKI_FIELD="${WIKI_FIELD}• [Modifie] ${TITLE}${NEWLINE}${URL}${NEWLINE}"
               fi
             done <<< "$WIKI_CHANGES"
 
@@ -77,9 +78,9 @@ jobs:
               SLUG=$(echo "$filepath" | sed 's|content/blog/articles/||;s|\.mdx$||')
               URL="$BASE_URL/blog/$SLUG"
               if [ "$status" = "A" ]; then
-                BLOG_FIELD="${BLOG_FIELD}• [Nouveau] ${TITLE}\n${URL}\n"
+                BLOG_FIELD="${BLOG_FIELD}• [Nouveau] ${TITLE}${NEWLINE}${URL}${NEWLINE}"
               else
-                BLOG_FIELD="${BLOG_FIELD}• [Modifie] ${TITLE}\n${URL}\n"
+                BLOG_FIELD="${BLOG_FIELD}• [Modifie] ${TITLE}${NEWLINE}${URL}${NEWLINE}"
               fi
             done <<< "$BLOG_CHANGES"
 
@@ -88,10 +89,14 @@ jobs:
             fi
           fi
 
-          # Send Discord webhook
+          # Send Discord webhook avec @everyone
           PAYLOAD=$(jq -n \
             --argjson fields "$FIELDS" \
             '{
+              "content": "@everyone",
+              "allowed_mentions": {
+                "parse": ["everyone"]
+              },
               "embeds": [{
                 "title": "🚀 Mise à jour du site !",
                 "color": 15158332,
