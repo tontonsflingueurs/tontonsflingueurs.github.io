@@ -48,11 +48,8 @@ console.log("Hello");
 Vous pouvez ajouter des images zoomables :
 
 \`\`\`mdx
-<ZoomableImage 
-  src="/wiki/mon-image.webp" 
-  alt="Description"
-  variant="centered"
-/>
+
+<ZoomableImage src='/wiki/mon-image.webp' alt='Description' variant='centered' />
 \`\`\`
 
 ## Liens

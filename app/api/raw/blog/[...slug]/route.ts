@@ -1,5 +1,5 @@
-import { blogSource } from "@/lib/source";
-import { notFound } from "next/navigation";
+import { blogSource } from '@/lib/source';
+import { notFound } from 'next/navigation';
 
 export const revalidate = false;
 
@@ -16,9 +16,9 @@ export async function GET(_req: Request, { params }: { params: Promise<{ slug: s
   const page = blogSource.getPage(slug);
   if (!page) notFound();
 
-  const raw = await page.data.getText("raw");
+  const raw = await page.data.getText('raw');
   return new Response(stripFrontmatter(raw), {
-    headers: { "Content-Type": "text/markdown" },
+    headers: { 'Content-Type': 'text/markdown' },
   });
 }
 

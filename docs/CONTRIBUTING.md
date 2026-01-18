@@ -7,6 +7,7 @@ Merci de votre intérêt pour contribuer au wiki TTF ! Les contributions sont le
 ### 1️⃣ Via GitHub Web (Recommandé pour les non-techniciens)
 
 **Avantages :**
+
 - Aucun logiciel à installer
 - Interface simple et visuelle
 - Aperçu en temps réel
@@ -53,17 +54,20 @@ Les images doivent être en WebP pour optimiser les performances (60-70% de réd
 ##### Convertir une image
 
 **Option A : Outils en ligne** (gratuit, simple)
+
 - [CloudConvert](https://cloudconvert.com/png-to-webp)
 - [Convertio](https://convertio.co/png-webp/)
 - [Online-Convert](https://image.online-convert.com/convert-to-webp)
 
 Étapes :
+
 1. Uploader votre image PNG/JPG
 2. Sélectionner "WebP" comme format
 3. Cliquer "Convert"
 4. Télécharger le fichier `.webp`
 
 **Option B : Ligne de commande** (si vous avez `imagemagick`)
+
 ```bash
 convert mon-image.png -quality 90 mon-image.webp
 ```
@@ -80,18 +84,16 @@ convert mon-image.png -quality 90 mon-image.webp
 Dans votre fichier `.mdx`, utilisez :
 
 ```mdx
-<ZoomableImage 
-  src="/blog/mon-image.webp" 
-  alt="Description de l'image" 
-  variant="centered"
-/>
+<ZoomableImage src='/blog/mon-image.webp' alt="Description de l'image" variant='centered' />
 ```
 
 Variantes :
+
 - `centered` : Centrée (par défaut)
 - `banner` : Pleine largeur
 
 **Vérifier l'image s'affiche bien :**
+
 - Cliquez sur le fichier image dans GitHub
 - Cliquez sur **Display the rich diff** pour voir un aperçu
 
@@ -116,6 +118,7 @@ Variantes :
 ### 2️⃣ En Développement Local (Pour les développeurs)
 
 **Avantages :**
+
 - Plus de contrôle et de flexibilité
 - Aperçu en temps réel localement
 - Optimisation automatique des images
@@ -159,6 +162,7 @@ git checkout -b article/titre-article upstream/main
 ```
 
 Conventions de noms de branche :
+
 - `feat/description` - Nouvelle fonctionnalité ou guide
 - `article/titre` - Nouvel article de blog
 - `fix/description` - Correction
@@ -167,6 +171,7 @@ Conventions de noms de branche :
 ##### Créer/modifier le contenu
 
 Créer des fichiers dans :
+
 - `content/wiki/` - Guides
 - `content/blog/articles/` - Articles (format : `YYYY-MM-DD-titre.mdx`)
 
@@ -183,6 +188,7 @@ bun run img:optimize
 ```
 
 Alternativement :
+
 ```bash
 # Juste convertir les images
 bun run img:convert
@@ -218,6 +224,7 @@ git push origin feat/mon-guide
 ```
 
 **Conventions de commits :**
+
 - `feat:` - Nouvelle fonctionnalité ou contenu
 - `fix:` - Correction
 - `docs:` - Documentation
@@ -235,13 +242,13 @@ git push origin feat/mon-guide
 
 #### Scripts utiles
 
-| Commande | Utilité |
-|----------|---------|
-| `bun dev` | Serveur de développement |
-| `bun bundle` | Build production complet |
-| `bun types:check` | Vérifier les types |
-| `bun lint` | Vérifier la qualité du code |
-| `bun format` | Formater le code |
+| Commande           | Utilité                              |
+| ------------------ | ------------------------------------ |
+| `bun dev`          | Serveur de développement             |
+| `bun bundle`       | Build production complet             |
+| `bun types:check`  | Vérifier les types                   |
+| `bun lint`         | Vérifier la qualité du code          |
+| `bun format`       | Formater le code                     |
 | `bun img:optimize` | Convertir + mettre à jour les images |
 
 ---
@@ -255,6 +262,7 @@ Utilisez les templates pour démarrer :
 Consultez [templates/TEMPLATE_GUIDE.md](./templates/TEMPLATE_GUIDE.md)
 
 Structure recommandée :
+
 - Introduction courte
 - Sections principales (###)
 - Conclusion
@@ -270,12 +278,13 @@ Plus : https://lucide.dev/icons
 Consultez [templates/TEMPLATE_POST.md](./templates/TEMPLATE_POST.md)
 
 Frontmatter requis :
+
 ```yaml
-title: "Titre"
-description: "Courte description"
-date: "2025-01-12"
-authors: [iokee, mahzazel]  # IDs des auteurs (voir utils/authors.ts)
-image: "/blog/mon-image.webp"
+title: 'Titre'
+description: 'Courte description'
+date: '2025-01-12'
+authors: [iokee, mahzazel] # IDs des auteurs (voir utils/authors.ts)
+image: '/blog/mon-image.webp'
 tags: [tag1, tag2]
 ```
 

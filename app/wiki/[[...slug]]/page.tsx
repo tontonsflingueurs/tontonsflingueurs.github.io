@@ -1,15 +1,15 @@
-import { source } from "@/lib/source";
-import { getMDXComponents } from "@/mdx-components";
-import { DEFAULT_WIKI_IMAGE } from "@/utils/constants";
-import { createRelativeLink } from "fumadocs-ui/mdx";
-import { DocsBody, DocsDescription, DocsPage, DocsTitle, PageLastUpdate } from "fumadocs-ui/page";
-import type { Metadata } from "next";
-import { notFound } from "next/navigation";
+import { source } from '@/lib/source';
+import { getMDXComponents } from '@/mdx-components';
+import { DEFAULT_WIKI_IMAGE } from '@/utils/constants';
+import { Image } from 'fumadocs-core/framework';
+import { createRelativeLink } from 'fumadocs-ui/mdx';
+import { DocsBody, DocsDescription, DocsPage, DocsTitle, PageLastUpdate } from 'fumadocs-ui/page';
+import type { Metadata } from 'next';
+import { notFound } from 'next/navigation';
 
 interface PageProps {
   params: Promise<{ slug?: string[] }>;
 }
-// wiki/tree/main/blog
 
 export default async function Page(props: PageProps) {
   const params = await props.params;
@@ -20,12 +20,14 @@ export default async function Page(props: PageProps) {
   const MDX = page.data.body;
 
   return (
-    <DocsPage toc={page.data.toc} tableOfContent={{ style: "clerk" }} full={page.data.full}>
+    <DocsPage toc={page.data.toc} tableOfContent={{ style: 'clerk' }} full={page.data.full}>
       {page.data.image && (
-        <img
+        <Image
           src={page.data.image}
           alt={page.data.title}
-          className="w-[calc(100%)] max-w-none h-auto object-contain mb-2"
+          className='w-[calc(100%)] max-w-none h-auto object-contain mb-2'
+          height={10}
+          width={10}
         />
       )}
       <DocsTitle>{page.data.title}</DocsTitle>
@@ -39,7 +41,7 @@ export default async function Page(props: PageProps) {
         />
       </DocsBody>
 
-      <div className="mt-12 pt-6 border-t border-fd-border inline-flex items-center justify-between w-full">
+      <div className='mt-12 pt-6 border-t border-fd-border inline-flex items-center justify-between w-full'>
         {lastModifiedTime && <PageLastUpdate date={lastModifiedTime} />}
       </div>
     </DocsPage>
@@ -66,7 +68,7 @@ export async function generateMetadata(props: PageProps): Promise<Metadata> {
       images: [{ url: imageUrl }],
     },
     twitter: {
-      card: "summary_large_image",
+      card: 'summary_large_image',
       title: page.data.title,
       description: page.data.description,
       images: [imageUrl],

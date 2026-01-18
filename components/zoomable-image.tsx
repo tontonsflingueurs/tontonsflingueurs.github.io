@@ -1,8 +1,8 @@
-"use client";
+'use client';
 
-import { ImageZoom } from "fumadocs-ui/components/image-zoom";
-import { Fullscreen } from "lucide-react";
-import { useEffect, useState } from "react";
+import { ImageZoom } from 'fumadocs-ui/components/image-zoom';
+import { Fullscreen } from 'lucide-react';
+import { useEffect, useState } from 'react';
 
 // File d'attente globale pour le préchargement séquentiel
 const imageQueue: Array<{ src: string; resolve: () => void }> = [];
@@ -38,15 +38,15 @@ function queueImagePreload(src: string): Promise<void> {
 interface ZoomableImageProps {
   src: string;
   alt: string;
-  variant?: "centered" | "banner" | "wide-banner" | "compact";
+  variant?: 'centered' | 'banner' | 'wide-banner' | 'compact';
 }
 
-export function ZoomableImage({ src, alt, variant = "centered" }: ZoomableImageProps) {
+export function ZoomableImage({ src, alt, variant = 'centered' }: ZoomableImageProps) {
   const [isLoaded, setIsLoaded] = useState(false);
 
-  const isBanner = variant === "banner";
-  const isWideBanner = variant === "wide-banner";
-  const isCompact = variant === "compact";
+  const isBanner = variant === 'banner';
+  const isWideBanner = variant === 'wide-banner';
+  const isCompact = variant === 'compact';
 
   // Précharge l'image via la file d'attente globale
   useEffect(() => {
@@ -56,23 +56,23 @@ export function ZoomableImage({ src, alt, variant = "centered" }: ZoomableImageP
   }, [src]);
 
   const getSkeletonClassName = () => {
-    if (isWideBanner) return "w-full aspect-[21/9] rounded-lg";
-    if (isBanner) return "w-full aspect-video rounded-lg";
-    if (isCompact) return "w-full aspect-[4/3] rounded-lg";
-    return "w-full aspect-[4/3] rounded-lg";
+    if (isWideBanner) return 'w-full aspect-[21/9] rounded-lg';
+    if (isBanner) return 'w-full aspect-video rounded-lg';
+    if (isCompact) return 'w-full aspect-[4/3] rounded-lg';
+    return 'w-full aspect-[4/3] rounded-lg';
   };
 
   const getClassName = () => {
     if (isWideBanner) {
-      return "w-full h-auto object-cover aspect-[21/9] rounded-lg";
+      return 'w-full h-auto object-cover aspect-[21/9] rounded-lg';
     }
     if (isBanner) {
-      return "w-full h-auto object-cover aspect-video rounded-lg";
+      return 'w-full h-auto object-cover aspect-video rounded-lg';
     }
     if (isCompact) {
-      return "rounded-lg w-auto h-auto max-w-full mt-0 mb-0";
+      return 'rounded-lg w-auto h-auto max-w-full mt-0 mb-0';
     }
-    return "rounded-lg w-auto h-auto max-w-full mt-0 mb-0";
+    return 'rounded-lg w-auto h-auto max-w-full mt-0 mb-0';
   };
 
   const skeleton = !isLoaded && <div className={`animate-pulse bg-fd-muted ${getSkeletonClassName()}`} />;
@@ -88,15 +88,15 @@ export function ZoomableImage({ src, alt, variant = "centered" }: ZoomableImageP
   );
 
   const zoomIndicator = (
-    <div className="absolute bottom-2 right-2 bg-fd-accent text-fd-accent-foreground px-1 py-1 rounded text-sm pointer-events-none">
-      <Fullscreen className="size-4 group-hover:hidden" />
-      <span className="hidden group-hover:inline">Cliquer pour agrandir</span>
+    <div className='absolute bottom-2 right-2 bg-fd-accent text-fd-accent-foreground px-1 py-1 rounded text-sm pointer-events-none'>
+      <Fullscreen className='size-4 group-hover:hidden' />
+      <span className='hidden group-hover:inline'>Cliquer pour agrandir</span>
     </div>
   );
 
   if (isBanner || isWideBanner) {
     return (
-      <div className="relative group">
+      <div className='relative group'>
         {skeleton}
         {imageElement}
         {isLoaded && zoomIndicator}
@@ -106,8 +106,8 @@ export function ZoomableImage({ src, alt, variant = "centered" }: ZoomableImageP
 
   if (isCompact) {
     return (
-      <div className="flex justify-center mb-4">
-        <div className="relative group md:max-w-[50%]">
+      <div className='flex justify-center mb-4'>
+        <div className='relative group md:max-w-[50%]'>
           {skeleton}
           {imageElement}
           {isLoaded && zoomIndicator}
@@ -117,8 +117,8 @@ export function ZoomableImage({ src, alt, variant = "centered" }: ZoomableImageP
   }
 
   return (
-    <div className="flex justify-center mb-4">
-      <div className="relative group md:max-w-[70%]">
+    <div className='flex justify-center mb-4'>
+      <div className='relative group md:max-w-[70%]'>
         {skeleton}
         {imageElement}
         {isLoaded && zoomIndicator}

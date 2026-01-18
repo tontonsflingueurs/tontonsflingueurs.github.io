@@ -1,14 +1,14 @@
-import { readdir, readFile, writeFile } from "fs/promises";
-import { join, relative } from "path";
-import { generateFilePathRegex, SUPPORTED_IMAGE_EXTENSIONS } from "../utils/image-extensions";
+import { readdir, readFile, writeFile } from 'fs/promises';
+import { join, relative } from 'path';
+import { generateFilePathRegex, SUPPORTED_IMAGE_EXTENSIONS } from '../utils/image-extensions';
 
 const ROOT_DIR = process.cwd();
 const FILE_PATH_REGEX = generateFilePathRegex(SUPPORTED_IMAGE_EXTENSIONS);
 
 // Search patterns: directories and file extensions to scan
 const searchPatterns = {
-  dirs: ["content", "components", "utils", "app"],
-  extensions: [".mdx", ".jsx", ".tsx", ".ts"],
+  dirs: ['content', 'components', 'utils', 'app'],
+  extensions: ['.mdx', '.jsx', '.tsx', '.ts'],
 };
 
 async function findFilesWithImageReferences(): Promise<string[]> {
@@ -23,14 +23,14 @@ async function findFilesWithImageReferences(): Promise<string[]> {
 
         if (entry.isDirectory()) {
           // Ignore node_modules et les répertoires cachés
-          if (!entry.name.startsWith(".") && entry.name !== "node_modules") {
+          if (!entry.name.startsWith('.') && entry.name !== 'node_modules') {
             await scanDirectory(fullPath);
           }
         } else if (entry.isFile()) {
-          const ext = join("", entry.name).slice(join("", entry.name).lastIndexOf("."));
+          const ext = join('', entry.name).slice(join('', entry.name).lastIndexOf('.'));
           if (searchPatterns.extensions.includes(ext)) {
             try {
-              const content = await readFile(fullPath, "utf-8");
+              const content = await readFile(fullPath, 'utf-8');
               if (SUPPORTED_IMAGE_EXTENSIONS.some((ext) => content.includes(ext))) {
                 filesWithImages.push(fullPath);
               }
@@ -65,24 +65,24 @@ function removeComments(content: string): string {
   return (
     content
       // Supprime les commentaires d'une ligne (// ...)
-      .replace(/\/\/.*$/gm, "")
+      .replace(/\/\/.*$/gm, '')
       // Supprime les commentaires multi-lignes (/* ... */)
-      .replace(/\/\*[\s\S]*?\*\//g, "")
+      .replace(/\/\*[\s\S]*?\*\//g, '')
   );
 }
 
 async function updateReferences() {
-  console.log("🔍 Scanning for image references (.png, .jpg, .jpeg) in MDX/JSX/TSX files...\n");
+  console.log('🔍 Scanning for image references (.png, .jpg, .jpeg) in MDX/JSX/TSX files...\n');
 
   const filesToUpdate = await findFilesWithImageReferences();
 
   if (filesToUpdate.length === 0) {
-    console.log("✨ No image references found!\n");
+    console.log('✨ No image references found!\n');
     return;
   }
 
   console.log(`📄 Found ${filesToUpdate.length} file(s) with image references\n`);
-  console.log("🔄 Updating image references to .webp...\n");
+  console.log('🔄 Updating image references to .webp...\n');
 
   let filesUpdated = 0;
   let replacementsCount = 0;
@@ -91,7 +91,7 @@ async function updateReferences() {
     const relPath = relative(ROOT_DIR, fullPath);
 
     try {
-      let content = await readFile(fullPath, "utf-8");
+      let content = await readFile(fullPath, 'utf-8');
       const originalContent = content;
 
       // Supprime les commentaires du contenu pour vérifier les remplacements
@@ -107,7 +107,7 @@ async function updateReferences() {
           // Non trouvé dans le contenu nettoyé mais trouvé dans l'original = c'est dans un commentaire
           return match;
         }
-        return prefix + ".webp";
+        return prefix + '.webp';
       });
 
       // Compte combien de remplacements ont été faits (ne compte que les correspondances hors commentaires)
@@ -115,17 +115,17 @@ async function updateReferences() {
       const replacements = matches.length;
 
       if (replacements > 0) {
-        await writeFile(fullPath, content, "utf-8");
+        await writeFile(fullPath, content, 'utf-8');
         filesUpdated++;
         replacementsCount += replacements;
-        console.log(`✅ ${relPath.padEnd(55)} (${replacements} reference${replacements > 1 ? "s" : ""})`);
+        console.log(`✅ ${relPath.padEnd(55)} (${replacements} reference${replacements > 1 ? 's' : ''})`);
       }
     } catch (error) {
       console.error(`❌ Error updating ${relPath}:`, error instanceof Error ? error.message : error);
     }
   }
 
-  console.log("\n📊 Update Summary:");
+  console.log('\n📊 Update Summary:');
   console.log(`   Files updated: ${filesUpdated}`);
   console.log(`   Total references updated: ${replacementsCount}`);
   console.log(`\n✨ All image references have been updated to .webp!\n`);

@@ -79,18 +79,18 @@ bun dev
 
 ## Scripts Disponibles
 
-| Commande | Description |
-|----------|-------------|
-| `bun dev` | Démarrer le serveur de développement |
-| `bun bundle` | Build production |
-| `bun start` | Démarrer le serveur en production |
-| `bun types:check` | Vérifier les types TypeScript |
-| `bun lint` | Linter le code (Oxlint) |
-| `bun lint:fix` | Corriger les erreurs de lint |
-| `bun format` | Formater le code (Oxfmt) |
-| `bun img:convert` | Convertir PNG → WebP |
-| `bun img:update-refs` | Mettre à jour les chemins d'images |
-| `bun img:optimize` | Optimiser les images (convert + update-refs) |
+| Commande              | Description                                  |
+| --------------------- | -------------------------------------------- |
+| `bun dev`             | Démarrer le serveur de développement         |
+| `bun bundle`          | Build production                             |
+| `bun start`           | Démarrer le serveur en production            |
+| `bun types:check`     | Vérifier les types TypeScript                |
+| `bun lint`            | Linter le code (Oxlint)                      |
+| `bun lint:fix`        | Corriger les erreurs de lint                 |
+| `bun format`          | Formater le code (Oxfmt)                     |
+| `bun img:convert`     | Convertir PNG → WebP                         |
+| `bun img:update-refs` | Mettre à jour les chemins d'images           |
+| `bun img:optimize`    | Optimiser les images (convert + update-refs) |
 
 ## Configuration
 
@@ -132,6 +132,7 @@ Chaque thème inclut les variantes light/dark.
 Disponibles dans tous les fichiers MDX :
 
 #### `<BlogCards limit={n} />`
+
 Affiche une grille des N derniers articles de blog.
 
 ```mdx
@@ -139,37 +140,28 @@ Affiche une grille des N derniers articles de blog.
 ```
 
 #### `<ZoomableImage />`
+
 Image avec zoom au clic, personnalisée pour le wiki.
 
 ```mdx
-<ZoomableImage 
-  src="/wiki/screenshot.webp" 
-  alt="Description" 
-  variant="centered" 
-/>
+<ZoomableImage src='/wiki/screenshot.webp' alt='Description' variant='centered' />
 
-<ZoomableImage 
-  src="/blog/banner.webp" 
-  alt="Banner" 
-  variant="banner" 
-/>
+<ZoomableImage src='/blog/banner.webp' alt='Banner' variant='banner' />
 ```
 
 Variantes :
+
 - `centered` (défaut) : Centrée, max 70% de largeur
 - `banner` : Pleine largeur, aspect 16:9
 
 #### Composants Fumadocs
+
 Tous les composants de fumadocs-ui sont disponibles :
 
 ```mdx
-<Card title="Titre">
-  Contenu
-</Card>
+<Card title='Titre'>Contenu</Card>
 
-<Callout type="warning">
-  Attention !
-</Callout>
+<Callout type='warning'>Attention !</Callout>
 ```
 
 ## Images et Optimisation
@@ -184,6 +176,7 @@ Toutes les images doivent être en **WebP** pour optimiser les performances.
 ### Ajouter des images
 
 1. **Convertir en WebP** (si nécessaire)
+
    ```bash
    bun run img:convert
    ```
@@ -192,22 +185,25 @@ Toutes les images doivent être en **WebP** pour optimiser les performances.
 
 3. **Référencer dans MDX**
    ```mdx
-   <ZoomableImage src="/blog/mon-image.webp" alt="..." />
+   <ZoomableImage src='/blog/mon-image.webp' alt='...' />
    ```
 
 ### Script d'optimisation
 
 `scripts/convert-to-webp.ts` :
+
 - Scanne récursivement `public/`
 - Convertit PNG → WebP (qualité 90)
 - Reporte les gains de taille
 
 `scripts/update-mdx-refs.ts` :
+
 - Scanne automatiquement `.mdx`, `.tsx`, `.ts`
 - Remplace les références `.png` → `.webp`
 - Ignore les commentaires
 
 Utilisation :
+
 ```bash
 # Option 1 : Convertir les images
 bun run img:convert
@@ -231,6 +227,7 @@ cp docs/templates/TEMPLATE_GUIDE.md content/wiki/mon-guide.mdx
 Ouvrir le fichier et suivre les instructions.
 
 Structure recommandée :
+
 - Introduction
 - Sections principales
 - Conclusion/Résumé
@@ -246,6 +243,7 @@ cp docs/templates/TEMPLATE_POST.md content/blog/articles/YYYY-MM-DD-mon-article.
 Dates recommandées pour les noms de fichiers.
 
 Frontmatter requis :
+
 - `title`
 - `description`
 - `date` (format `YYYY-MM-DD`)

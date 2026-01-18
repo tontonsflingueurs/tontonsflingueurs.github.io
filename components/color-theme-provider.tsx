@@ -1,28 +1,14 @@
 'use client';
 
-import {
-  DEFAULT_THEME,
-  STORAGE_KEY,
-  VALID_THEMES,
-  type ColorTheme,
-} from '@/lib/themes';
-import {
-  createContext,
-  useCallback,
-  useContext,
-  useEffect,
-  useSyncExternalStore,
-  type ReactNode,
-} from 'react';
+import { DEFAULT_THEME, STORAGE_KEY, VALID_THEMES, type ColorTheme } from '@/lib/themes';
+import { createContext, useCallback, useContext, useEffect, useSyncExternalStore, type ReactNode } from 'react';
 
 interface ColorThemeContextValue {
   colorTheme: ColorTheme;
   setColorTheme: (theme: ColorTheme) => void;
 }
 
-const ColorThemeContext = createContext<ColorThemeContextValue | undefined>(
-  undefined,
-);
+const ColorThemeContext = createContext<ColorThemeContextValue | undefined>(undefined);
 
 function getStoredTheme(): ColorTheme {
   if (typeof window === 'undefined') return DEFAULT_THEME;
@@ -60,11 +46,7 @@ function setTheme(theme: ColorTheme) {
 }
 
 export function ColorThemeProvider({ children }: { children: ReactNode }) {
-  const colorTheme = useSyncExternalStore(
-    subscribe,
-    getSnapshot,
-    getServerSnapshot,
-  );
+  const colorTheme = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
 
   // Initialiser le theme depuis localStorage au mount
   useEffect(() => {
@@ -80,11 +62,7 @@ export function ColorThemeProvider({ children }: { children: ReactNode }) {
     setTheme(theme);
   }, []);
 
-  return (
-    <ColorThemeContext.Provider value={{ colorTheme, setColorTheme }}>
-      {children}
-    </ColorThemeContext.Provider>
-  );
+  return <ColorThemeContext.Provider value={{ colorTheme, setColorTheme }}>{children}</ColorThemeContext.Provider>;
 }
 
 export function useColorTheme() {

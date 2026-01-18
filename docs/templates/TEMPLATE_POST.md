@@ -17,9 +17,9 @@ Copiez ce fichier et renommez-le en `.mdx` (par exemple: `2025-01-12-mon-article
 ---
 title: Titre de votre article
 description: Une description courte de l'article (apparait dans les aperçus)
-date: "2025-01-12"
+date: '2025-01-12'
 authors: [votre_id]
-image: "/blog/mon-image.webp"
+image: '/blog/mon-image.webp'
 tags: [tag1, tag2]
 ---
 
@@ -38,11 +38,8 @@ Plus de details...
 Pour ajouter une image zoomable :
 
 \`\`\`mdx
-<ZoomableImage 
-  src="/blog/mon-image.webp" 
-  alt="Description rapide" 
-  variant="centered"
-/>
+
+<ZoomableImage src='/blog/mon-image.webp' alt='Description rapide' variant='centered' />
 \`\`\`
 
 ## Liens
@@ -80,28 +77,37 @@ Exemples :
 ## Métadonnées requises
 
 ### title
+
 Titre de l'article (affiché en haut et dans les listes)
 
 ### description
+
 Courte description (1-2 phrases) - utilisée dans les aperçus et les réseaux sociaux
 
 ### date
+
 Date de publication au format `"YYYY-MM-DD"`
 
 ### authors
+
 Liste des ID d'auteurs (voir `utils/authors.ts`)
+
 ```yaml
 authors: [iokee, mahzazel]
 ```
 
 ### image
+
 Chemin vers l'image en WebP (utilisée comme couverture)
+
 ```yaml
-image: "/blog/mon-image.webp"
+image: '/blog/mon-image.webp'
 ```
 
 ### tags
+
 Tags pour catégoriser l'article
+
 ```yaml
 tags: [guide, stratégie, événement]
 ```
@@ -124,6 +130,7 @@ tags: [guide, stratégie, événement]
 Format recommandé : `YYYY-MM-DD-titre-de-larticle.mdx`
 
 Exemples :
+
 - `2025-01-12-guide-arènes.mdx`
 - `2025-01-10-annonce-mise-a-jour.mdx`
 

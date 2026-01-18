@@ -1,7 +1,7 @@
-import { defineConfig, defineDocs, frontmatterSchema, metaSchema } from "fumadocs-mdx/config";
-import lastModified from "fumadocs-mdx/plugins/last-modified";
-import { z } from "zod";
-import remarkFrenchTypography from "./lib/remark-french-typography";
+import { defineConfig, defineDocs, frontmatterSchema, metaSchema } from 'fumadocs-mdx/config';
+import lastModified from 'fumadocs-mdx/plugins/last-modified';
+import { z } from 'zod';
+import remarkFrenchTypography from './lib/remark-french-typography';
 
 // Schema etendu pour le blog
 const blogFrontmatterSchema = frontmatterSchema.extend({
@@ -18,7 +18,7 @@ const wikiFrontmatterSchema = frontmatterSchema.extend({
 
 // Collection Wiki (docs)
 export const docs = defineDocs({
-  dir: "content/wiki",
+  dir: 'content/wiki',
   docs: {
     schema: wikiFrontmatterSchema,
   },
@@ -29,7 +29,7 @@ export const docs = defineDocs({
 
 // Collection Blog
 export const blog = defineDocs({
-  dir: "content/blog",
+  dir: 'content/blog',
   docs: {
     schema: blogFrontmatterSchema,
   },

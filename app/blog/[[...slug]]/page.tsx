@@ -1,12 +1,12 @@
-import { PageActions } from "@/components/page-actions";
-import { ZoomableImage } from "@/components/zoomable-image";
-import { blogSource } from "@/lib/source";
-import { getMDXComponents } from "@/mdx-components";
-import { DEFAULT_BLOG_IMAGE, GITHUB_REPO } from "@/utils/constants";
-import { estimateReadingTime } from "@/utils/reading-time";
-import { DocsBody, DocsDescription, DocsPage, DocsTitle, PageLastUpdate } from "fumadocs-ui/page";
-import type { Metadata } from "next";
-import { notFound } from "next/navigation";
+import { PageActions } from '@/components/page-actions';
+import { ZoomableImage } from '@/components/zoomable-image';
+import { blogSource } from '@/lib/source';
+import { getMDXComponents } from '@/mdx-components';
+import { DEFAULT_BLOG_IMAGE, GITHUB_REPO } from '@/utils/constants';
+import { estimateReadingTime } from '@/utils/reading-time';
+import { DocsBody, DocsDescription, DocsPage, DocsTitle, PageLastUpdate } from 'fumadocs-ui/page';
+import type { Metadata } from 'next';
+import { notFound } from 'next/navigation';
 
 interface PageProps {
   params: Promise<{ slug?: string[] }>;
@@ -20,7 +20,7 @@ export default async function BlogPostPage(props: PageProps) {
 
   const MDX = page.data.body;
   const imageUrl = page.data.image || DEFAULT_BLOG_IMAGE;
-  const slugPath = page.slugs.length === 0 ? "index" : page.slugs.join("/");
+  const slugPath = page.slugs.length === 0 ? 'index' : page.slugs.join('/');
   const githubEditUrl = `${GITHUB_REPO}/tree/main/content/blog/${slugPath}.mdx`;
 
   // Page d'index du blog (pas d'article)
@@ -28,7 +28,7 @@ export default async function BlogPostPage(props: PageProps) {
 
   if (isIndexPage) {
     return (
-      <DocsPage toc={page.data.toc} tableOfContent={{ style: "clerk" }} full={page.data.full}>
+      <DocsPage toc={page.data.toc} tableOfContent={{ style: 'clerk' }} full={page.data.full}>
         <DocsBody>
           <MDX components={getMDXComponents({})} />
         </DocsBody>
@@ -38,19 +38,19 @@ export default async function BlogPostPage(props: PageProps) {
 
   // Page d'article
   return (
-    <DocsPage toc={page.data.toc} tableOfContent={{ style: "clerk" }}>
-      <ZoomableImage src={imageUrl} alt={page.data.title} variant="banner" />
+    <DocsPage toc={page.data.toc} tableOfContent={{ style: 'clerk' }}>
+      <ZoomableImage src={imageUrl} alt={page.data.title} variant='banner' />
 
       <DocsTitle>{page.data.title}</DocsTitle>
-      <div className="flex flex-col lg:flex-row lg:flex-wrap lg:items-center gap-2 text-sm text-fd-muted-foreground -mt-2">
-        <div className="flex flex-wrap items-center gap-2">
+      <div className='flex flex-col lg:flex-row lg:flex-wrap lg:items-center gap-2 text-sm text-fd-muted-foreground -mt-2'>
+        <div className='flex flex-wrap items-center gap-2'>
           {page.data.date && (
             <time dateTime={page.data.date}>
-              {new Date(page.data.date).toLocaleDateString("fr-FR", {
-                year: "numeric",
-                month: "long",
-                day: "numeric",
-                timeZone: "UTC",
+              {new Date(page.data.date).toLocaleDateString('fr-FR', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+                timeZone: 'UTC',
               })}
             </time>
           )}
@@ -59,19 +59,19 @@ export default async function BlogPostPage(props: PageProps) {
           {page.data.authors && page.data.authors.length > 0 && (
             <>
               <span>•</span>
-              <span>par {page.data.authors.join(", ")}</span>
+              <span>par {page.data.authors.join(', ')}</span>
             </>
           )}
         </div>
         <PageActions markdownUrl={`/api/raw${page.url}`} githubUrl={githubEditUrl} />
       </div>
-      <DocsDescription className="-mb-1">{page.data.description}</DocsDescription>
+      <DocsDescription className='-mb-1'>{page.data.description}</DocsDescription>
 
       <DocsBody>
         <MDX components={getMDXComponents({})} />
       </DocsBody>
 
-      <div className="mt-12 pt-6 border-t border-fd-border inline-flex items-center justify-between w-full">
+      <div className='mt-12 pt-6 border-t border-fd-border inline-flex items-center justify-between w-full'>
         {lastModifiedTime && <PageLastUpdate date={lastModifiedTime} />}
       </div>
     </DocsPage>
@@ -98,7 +98,7 @@ export async function generateMetadata(props: PageProps): Promise<Metadata> {
       images: [{ url: imageUrl }],
     },
     twitter: {
-      card: "summary_large_image",
+      card: 'summary_large_image',
       title: page.data.title,
       description: page.data.description,
       images: [imageUrl],
