@@ -19,6 +19,11 @@ bun format       # Format with Oxfmt
 
 ALWAYS use bun for commands. NEVER use npm/yarn/pnpm.
 
+## Code Style
+
+- **Comments**: ALWAYS write comments in French only. NEVER write comments in English.
+- Code should be self-explanatory when possible, with French comments for complex logic.
+
 ## Architecture
 
 ### Two Content Collections (source.config.ts)

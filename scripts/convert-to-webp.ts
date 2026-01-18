@@ -1,11 +1,13 @@
 import { readdir, readFile, writeFile } from "fs/promises";
 import { extname, join } from "path";
 import sharp from "sharp";
+import { generateFileReplacementRegex, SUPPORTED_IMAGE_EXTENSIONS } from "../utils/image-extensions";
 
 const PUBLIC_DIR = join(process.cwd(), "public");
+const REPLACEMENT_REGEX = generateFileReplacementRegex(SUPPORTED_IMAGE_EXTENSIONS);
 
 async function convertPngsToWebp() {
-  console.log("🖼️  Starting PNG to WebP conversion...\n");
+  console.log("🖼️  Starting image to WebP conversion...\n");
 
   const stats = {
     converted: 0,
@@ -24,46 +26,35 @@ async function convertPngsToWebp() {
 
         if (file.isDirectory()) {
           await processDirectory(fullPath);
-        } else if (extname(file.name).toLowerCase() === ".png") {
+        } else if (SUPPORTED_IMAGE_EXTENSIONS.includes(extname(file.name).toLowerCase() as any)) {
           try {
             const originalBuffer = await readFile(fullPath);
             const originalSize = originalBuffer.length;
 
-            const webpBuffer = await sharp(originalBuffer)
-              .webp({ quality: 90 })
-              .toBuffer();
+            const webpBuffer = await sharp(originalBuffer).webp({ quality: 90 }).toBuffer();
 
             const webpSize = webpBuffer.length;
-            const webpPath = fullPath.replace(/\.png$/i, ".webp");
+            const webpPath = fullPath.replace(REPLACEMENT_REGEX, ".webp");
 
             await writeFile(webpPath, webpBuffer);
 
-            const reduction = (
-              ((originalSize - webpSize) / originalSize) *
-              100
-            ).toFixed(1);
+            const reduction = (((originalSize - webpSize) / originalSize) * 100).toFixed(1);
 
             console.log(
-              `✅ ${file.name.padEnd(40)} ${(originalSize / 1024).toFixed(1).padStart(8)}KB → ${(webpSize / 1024).toFixed(1).padStart(8)}KB (${reduction}% reduction)`
+              `✅ ${file.name.padEnd(40)} ${(originalSize / 1024).toFixed(1).padStart(8)}KB → ${(webpSize / 1024).toFixed(1).padStart(8)}KB (${reduction}% reduction)`,
             );
 
             stats.converted++;
             stats.totalOriginalSize += originalSize;
             stats.totalWebpSize += webpSize;
           } catch (error) {
-            console.error(
-              `❌ Error converting ${file.name}:`,
-              error instanceof Error ? error.message : error
-            );
+            console.error(`❌ Error converting ${file.name}:`, error instanceof Error ? error.message : error);
             stats.errors++;
           }
         }
       }
     } catch (error) {
-      console.error(
-        `Error reading directory ${dir}:`,
-        error instanceof Error ? error.message : error
-      );
+      console.error(`Error reading directory ${dir}:`, error instanceof Error ? error.message : error);
     }
   }
 
@@ -72,18 +63,12 @@ async function convertPngsToWebp() {
   console.log("\n📊 Conversion Summary:");
   console.log(`   Converted: ${stats.converted} files`);
   console.log(`   Errors: ${stats.errors}`);
+  console.log(`   Total original size: ${(stats.totalOriginalSize / 1024 / 1024).toFixed(2)}MB`);
+  console.log(`   Total WebP size: ${(stats.totalWebpSize / 1024 / 1024).toFixed(2)}MB`);
   console.log(
-    `   Total original size: ${(stats.totalOriginalSize / 1024 / 1024).toFixed(2)}MB`
+    `   Overall reduction: ${(((stats.totalOriginalSize - stats.totalWebpSize) / stats.totalOriginalSize) * 100).toFixed(1)}%`,
   );
-  console.log(
-    `   Total WebP size: ${(stats.totalWebpSize / 1024 / 1024).toFixed(2)}MB`
-  );
-  console.log(
-    `   Overall reduction: ${(((stats.totalOriginalSize - stats.totalWebpSize) / stats.totalOriginalSize) * 100).toFixed(1)}%`
-  );
-  console.log(
-    `   Space saved: ${((stats.totalOriginalSize - stats.totalWebpSize) / 1024 / 1024).toFixed(2)}MB\n`
-  );
+  console.log(`   Space saved: ${((stats.totalOriginalSize - stats.totalWebpSize) / 1024 / 1024).toFixed(2)}MB\n`);
 }
 
 convertPngsToWebp().catch(console.error);

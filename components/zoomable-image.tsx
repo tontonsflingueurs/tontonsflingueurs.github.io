@@ -38,7 +38,7 @@ function queueImagePreload(src: string): Promise<void> {
 interface ZoomableImageProps {
   src: string;
   alt: string;
-  variant?: "centered" | "banner" | "wide-banner";
+  variant?: "centered" | "banner" | "wide-banner" | "compact";
 }
 
 export function ZoomableImage({ src, alt, variant = "centered" }: ZoomableImageProps) {
@@ -46,6 +46,7 @@ export function ZoomableImage({ src, alt, variant = "centered" }: ZoomableImageP
 
   const isBanner = variant === "banner";
   const isWideBanner = variant === "wide-banner";
+  const isCompact = variant === "compact";
 
   // Précharge l'image via la file d'attente globale
   useEffect(() => {
@@ -57,6 +58,7 @@ export function ZoomableImage({ src, alt, variant = "centered" }: ZoomableImageP
   const getSkeletonClassName = () => {
     if (isWideBanner) return "w-full aspect-[21/9] rounded-lg";
     if (isBanner) return "w-full aspect-video rounded-lg";
+    if (isCompact) return "w-full aspect-[4/3] rounded-lg";
     return "w-full aspect-[4/3] rounded-lg";
   };
 
@@ -66,6 +68,9 @@ export function ZoomableImage({ src, alt, variant = "centered" }: ZoomableImageP
     }
     if (isBanner) {
       return "w-full h-auto object-cover aspect-video rounded-lg";
+    }
+    if (isCompact) {
+      return "rounded-lg w-auto h-auto max-w-full mt-0 mb-0";
     }
     return "rounded-lg w-auto h-auto max-w-full mt-0 mb-0";
   };
@@ -95,6 +100,18 @@ export function ZoomableImage({ src, alt, variant = "centered" }: ZoomableImageP
         {skeleton}
         {imageElement}
         {isLoaded && zoomIndicator}
+      </div>
+    );
+  }
+
+  if (isCompact) {
+    return (
+      <div className="flex justify-center mb-4">
+        <div className="relative group md:max-w-[50%]">
+          {skeleton}
+          {imageElement}
+          {isLoaded && zoomIndicator}
+        </div>
       </div>
     );
   }
