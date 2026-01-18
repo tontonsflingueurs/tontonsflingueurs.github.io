@@ -57,7 +57,11 @@ jobs:
           if [ -n "$WIKI_CHANGES" ]; then
             while IFS=$'\t' read -r status filepath; do
               [ -z "$filepath" ] && continue
-              TITLE=$(grep -m1 '^title:' "$filepath" 2>/dev/null | sed 's/title: *"\?\([^"]*\)"\?/\1/' || echo "$filepath")
+              # Ignorer les fichiers supprimes (D) car ils n'existent plus
+              [ "$status" = "D" ] && continue
+              TITLE=$(grep -m1 '^title:' "$filepath" 2>/dev/null | sed 's/title: *"\?\([^"]*\)"\?/\1/')
+              # Si pas de titre trouve, ignorer ce fichier
+              [ -z "$TITLE" ] && continue
               SLUG=$(echo "$filepath" | sed 's|content/wiki/||;s|\.mdx$||;s|/index$||')
               [ -z "$SLUG" ] && URL="$BASE_URL/wiki" || URL="$BASE_URL/wiki/$SLUG"
               if [ "$status" = "A" ]; then
@@ -72,7 +76,11 @@ jobs:
           if [ -n "$BLOG_CHANGES" ]; then
             while IFS=$'\t' read -r status filepath; do
               [ -z "$filepath" ] && continue
-              TITLE=$(grep -m1 '^title:' "$filepath" 2>/dev/null | sed 's/title: *"\?\([^"]*\)"\?/\1/' || echo "$filepath")
+              # Ignorer les fichiers supprimes (D) car ils n'existent plus
+              [ "$status" = "D" ] && continue
+              TITLE=$(grep -m1 '^title:' "$filepath" 2>/dev/null | sed 's/title: *"\?\([^"]*\)"\?/\1/')
+              # Si pas de titre trouve, ignorer ce fichier
+              [ -z "$TITLE" ] && continue
               SLUG=$(echo "$filepath" | sed 's|content/blog/articles/||;s|\.mdx$||')
               URL="$BASE_URL/blog/$SLUG"
               if [ "$status" = "A" ]; then
