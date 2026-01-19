@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
-import { DEFAULT_THEME, STORAGE_KEY, VALID_THEMES, type ColorTheme } from '@/lib/themes';
-import { createContext, useCallback, useContext, useEffect, useSyncExternalStore, type ReactNode } from 'react';
+import { DEFAULT_THEME, STORAGE_KEY, VALID_THEMES, type ColorTheme } from "@/lib/themes";
+import { createContext, useCallback, useContext, useEffect, useSyncExternalStore, type ReactNode } from "react";
 
 interface ColorThemeContextValue {
   colorTheme: ColorTheme;
@@ -11,7 +11,7 @@ interface ColorThemeContextValue {
 const ColorThemeContext = createContext<ColorThemeContextValue | undefined>(undefined);
 
 function getStoredTheme(): ColorTheme {
-  if (typeof window === 'undefined') return DEFAULT_THEME;
+  if (typeof window === "undefined") return DEFAULT_THEME;
   const stored = localStorage.getItem(STORAGE_KEY);
   if (stored && VALID_THEMES.includes(stored as ColorTheme)) {
     return stored as ColorTheme;
@@ -41,7 +41,7 @@ function getServerSnapshot(): ColorTheme {
 function setTheme(theme: ColorTheme) {
   currentTheme = theme;
   localStorage.setItem(STORAGE_KEY, theme);
-  document.body.setAttribute('data-theme', theme);
+  document.body.setAttribute("data-theme", theme);
   listeners.forEach((listener) => listener());
 }
 
@@ -53,7 +53,7 @@ export function ColorThemeProvider({ children }: { children: ReactNode }) {
     const stored = getStoredTheme();
     if (stored !== currentTheme) {
       currentTheme = stored;
-      document.body.setAttribute('data-theme', stored);
+      document.body.setAttribute("data-theme", stored);
       listeners.forEach((listener) => listener());
     }
   }, []);
@@ -68,7 +68,7 @@ export function ColorThemeProvider({ children }: { children: ReactNode }) {
 export function useColorTheme() {
   const context = useContext(ColorThemeContext);
   if (context === undefined) {
-    throw new Error('useColorTheme must be used within a ColorThemeProvider');
+    throw new Error("useColorTheme must be used within a ColorThemeProvider");
   }
   return context;
 }

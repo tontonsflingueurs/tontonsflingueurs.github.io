@@ -17,9 +17,9 @@ Copiez ce fichier et renommez-le en `.mdx` (par exemple: `2025-01-12-mon-article
 ---
 title: Titre de votre article
 description: Une description courte de l'article (apparait dans les aperçus)
-date: '2025-01-12'
+date: "2025-01-12"
 authors: [votre_id]
-image: '/blog/mon-image.webp'
+image: "/blog/mon-image.webp"
 tags: [tag1, tag2]
 ---
 
@@ -39,7 +39,7 @@ Pour ajouter une image zoomable :
 
 \`\`\`mdx
 
-<ZoomableImage src='/blog/mon-image.webp' alt='Description rapide' variant='centered' />
+<ZoomableImage src="/blog/mon-image.webp" alt="Description rapide" variant="centered" />
 \`\`\`
 
 ## Liens
@@ -101,7 +101,7 @@ authors: [iokee, mahzazel]
 Chemin vers l'image en WebP (utilisée comme couverture)
 
 ```yaml
-image: '/blog/mon-image.webp'
+image: "/blog/mon-image.webp"
 ```
 
 ### tags

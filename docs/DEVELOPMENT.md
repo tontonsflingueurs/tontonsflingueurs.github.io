@@ -144,9 +144,9 @@ Affiche une grille des N derniers articles de blog.
 Image avec zoom au clic, personnalisée pour le wiki.
 
 ```mdx
-<ZoomableImage src='/wiki/screenshot.webp' alt='Description' variant='centered' />
+<ZoomableImage src="/wiki/screenshot.webp" alt="Description" variant="centered" />
 
-<ZoomableImage src='/blog/banner.webp' alt='Banner' variant='banner' />
+<ZoomableImage src="/blog/banner.webp" alt="Banner" variant="banner" />
 ```
 
 Variantes :
@@ -159,9 +159,9 @@ Variantes :
 Tous les composants de fumadocs-ui sont disponibles :
 
 ```mdx
-<Card title='Titre'>Contenu</Card>
+<Card title="Titre">Contenu</Card>
 
-<Callout type='warning'>Attention !</Callout>
+<Callout type="warning">Attention !</Callout>
 ```
 
 ## Images et Optimisation
@@ -185,7 +185,7 @@ Toutes les images doivent être en **WebP** pour optimiser les performances.
 
 3. **Référencer dans MDX**
    ```mdx
-   <ZoomableImage src='/blog/mon-image.webp' alt='...' />
+   <ZoomableImage src="/blog/mon-image.webp" alt="..." />
    ```
 
 ### Script d'optimisation

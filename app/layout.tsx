@@ -1,32 +1,32 @@
-import { ColorThemeProvider } from '@/components/color-theme-provider';
-import { devTitle } from '@/utils/dev-title';
-import { RootProvider } from 'fumadocs-ui/provider/next';
-import type { Metadata } from 'next';
-import { Inter } from 'next/font/google';
-import type { PropsWithChildren } from 'react';
-import './global.css';
+import { ColorThemeProvider } from "@/components/color-theme-provider";
+import { devTitle } from "@/utils/dev-title";
+import { RootProvider } from "fumadocs-ui/provider/next";
+import type { Metadata } from "next";
+import { Inter } from "next/font/google";
+import type { PropsWithChildren } from "react";
+import "./global.css";
 
 const inter = Inter({
-  subsets: ['latin'],
+  subsets: ["latin"],
 });
 
 // Titre dynamique selon l'environnement (dev vs prod)
-const defaultTitle = devTitle('Tontons Flingueurs');
+const defaultTitle = devTitle("Tontons Flingueurs");
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://tontonsflingueurs.github.io'),
+  metadataBase: new URL("https://tontonsflingueurs.github.io"),
   title: defaultTitle,
-  description: 'Wiki et blog communautaire des Tontons Flingueurs',
+  description: "Wiki et blog communautaire des Tontons Flingueurs",
   openGraph: {
     title: defaultTitle,
-    description: 'Wiki et blog communautaire des Tontons Flingueurs',
-    images: [{ url: '/wiki/banniere.webp' }],
+    description: "Wiki et blog communautaire des Tontons Flingueurs",
+    images: [{ url: "/wiki/banniere.webp" }],
   },
   twitter: {
-    card: 'summary_large_image',
+    card: "summary_large_image",
     title: defaultTitle,
-    description: 'Wiki et blog communautaire des Tontons Flingueurs',
-    images: ['/wiki/banniere.webp'],
+    description: "Wiki et blog communautaire des Tontons Flingueurs",
+    images: ["/wiki/banniere.webp"],
   },
 };
 
@@ -52,10 +52,10 @@ const colorThemeScript = `
 
 export default function Layout({ children }: PropsWithChildren) {
   return (
-    <html lang='fr' className={inter.className} suppressHydrationWarning>
-      <body className='flex flex-col min-h-screen' suppressHydrationWarning>
+    <html lang="fr" className={inter.className} suppressHydrationWarning>
+      <body className="flex flex-col min-h-screen" suppressHydrationWarning>
         <script dangerouslySetInnerHTML={{ __html: colorThemeScript }} suppressHydrationWarning />
-        <RootProvider search={{ options: { type: 'static' } }}>
+        <RootProvider search={{ options: { type: "static" } }}>
           <ColorThemeProvider>{children}</ColorThemeProvider>
         </RootProvider>
       </body>

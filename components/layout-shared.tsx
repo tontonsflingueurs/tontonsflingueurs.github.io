@@ -1,25 +1,25 @@
-import { devTitle } from '@/utils/dev-title';
-import type { BaseLayoutProps } from 'fumadocs-ui/layouts/shared';
-import Image from 'next/image';
-import packageJson from 'package.json' with { type: 'json' };
-import { ColorThemeSwitcher } from './color-theme-switcher';
+import { devTitle } from "@/utils/dev-title";
+import type { BaseLayoutProps } from "fumadocs-ui/layouts/shared";
+import Image from "next/image";
+import packageJson from "package.json" with { type: "json" };
+import { ColorThemeSwitcher } from "./color-theme-switcher";
 
 // Titre dynamique selon l'environnement (dev vs prod)
-const siteTitle = devTitle('Tontons Flingueurs');
+const siteTitle = devTitle("Tontons Flingueurs");
 
 export function baseOptions(): BaseLayoutProps {
   return {
     nav: {
       title: (
         <>
-          <Image src='/logo.webp' alt='TTF' width={24} height={24} />
+          <Image src="/logo.webp" alt="TTF" width={24} height={24} />
           <span>{siteTitle}</span>
         </>
       ),
     },
     links: [
       {
-        type: 'custom',
+        type: "custom",
         secondary: true,
         children: <ColorThemeSwitcher />,
       },
@@ -27,7 +27,7 @@ export function baseOptions(): BaseLayoutProps {
     githubUrl: packageJson.repository.url,
     themeSwitch: {
       enabled: true,
-      mode: 'light-dark-system',
+      mode: "light-dark-system",
     },
   };
 }

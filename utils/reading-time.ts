@@ -1,19 +1,19 @@
-import type { StructuredData } from 'fumadocs-core/mdx-plugins';
+import type { StructuredData } from "fumadocs-core/mdx-plugins";
 
 export function estimateReadingTime(structuredData: StructuredData): number {
   const wordsPerMinute = 200;
 
   // Extraire tout le texte du structuredData
-  let text = '';
+  let text = "";
 
   // Contenu des headings
   if (structuredData.headings) {
-    text += structuredData.headings.map((h) => h.content).join(' ');
+    text += structuredData.headings.map((h) => h.content).join(" ");
   }
 
   // Contenu principal
   if (structuredData.contents) {
-    text += ' ' + structuredData.contents.map((c) => c.content).join(' ');
+    text += " " + structuredData.contents.map((c) => c.content).join(" ");
   }
 
   const words = text

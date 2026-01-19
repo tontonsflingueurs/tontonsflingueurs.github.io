@@ -1,9 +1,8 @@
 name: Discord Notification
 
 on:
-  # Se declenche apres le deploy GitHub Pages
   workflow_run:
-    workflows: ['Deploy to GitHub Pages']
+    workflows: ["Deploy to GitHub Pages"]
     types: [completed]
 
 jobs:
@@ -119,27 +118,23 @@ jobs:
             fi
           fi
 
-          # Ajout d'un espace avant la bannière (caractère invisible)
-          MESSAGE="${MESSAGE}‎"
+          # Espace avant la bannière
+          MESSAGE="${MESSAGE}${NEWLINE}‎"
 
-          # Envoi avec embed pour l'image
+          # Télécharger la bannière
+          curl -sL -o banniere.webp "$BASE_URL/wiki/banniere.webp"
+
+          # Créer le payload JSON
           PAYLOAD=$(jq -n \
             --arg content "$MESSAGE" \
-            --arg img "$BASE_URL/wiki/banniere.webp" \
             '{
               "content": $content,
               "allowed_mentions": {
                 "parse": ["everyone"]
-              },
-              "embeds": [
-                {
-                  "image": {
-                    "url": $img
-                  }
-                }
-              ]
+              }
             }')
 
+          # Envoyer avec l'image en attachment
           curl -X POST "$DISCORD_WEBHOOK_URL" \
-            -H "Content-Type: application/json" \
-            -d "$PAYLOAD"
+            -F "payload_json=$PAYLOAD" \
+            -F "file=@banniere.webp"

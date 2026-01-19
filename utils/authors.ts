@@ -1,9 +1,9 @@
-export const DEFAULT_AVATAR = '/logo.webp';
+export const DEFAULT_AVATAR = "/logo.webp";
 
 export const authors = {
   mathias: {
-    name: 'Mathias',
-    github: 'mathiasdotdev',
+    name: "Mathias",
+    github: "mathiasdotdev",
   },
 } as const;
 

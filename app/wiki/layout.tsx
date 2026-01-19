@@ -1,30 +1,30 @@
-import { baseOptions } from '@/components/layout-shared';
-import { source } from '@/lib/source';
-import { DocsLayout } from 'fumadocs-ui/layouts/notebook';
-import type { PropsWithChildren } from 'react';
+import { baseOptions } from "@/components/layout-shared";
+import { source } from "@/lib/source";
+import { DocsLayout } from "fumadocs-ui/layouts/notebook";
+import type { PropsWithChildren } from "react";
 
 export default function Layout({ children }: PropsWithChildren) {
   return (
     <DocsLayout
       {...baseOptions()}
       tree={source.getPageTree()}
-      tabMode='navbar'
+      tabMode="navbar"
       sidebar={{
         tabs: [
           {
-            title: 'Accueil',
+            title: "Accueil",
             description: "Page d'accueil du site",
-            url: '/',
+            url: "/",
           },
           {
-            title: 'Wiki',
-            description: 'Documentation et guides',
-            url: '/wiki',
+            title: "Wiki",
+            description: "Documentation et guides",
+            url: "/wiki",
           },
           {
-            title: 'Blog',
-            description: 'Annonces et articles',
-            url: '/blog',
+            title: "Blog",
+            description: "Annonces et articles",
+            url: "/blog",
           },
         ],
       }}>

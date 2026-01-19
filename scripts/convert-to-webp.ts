@@ -1,13 +1,13 @@
-import { readdir, readFile, writeFile } from 'fs/promises';
-import { extname, join } from 'path';
-import sharp from 'sharp';
-import { generateFileReplacementRegex, SUPPORTED_IMAGE_EXTENSIONS } from '../utils/image-extensions';
+import { readdir, readFile, writeFile } from "fs/promises";
+import { extname, join } from "path";
+import sharp from "sharp";
+import { generateFileReplacementRegex, SUPPORTED_IMAGE_EXTENSIONS } from "../utils/image-extensions";
 
-const PUBLIC_DIR = join(process.cwd(), 'public');
+const PUBLIC_DIR = join(process.cwd(), "public");
 const REPLACEMENT_REGEX = generateFileReplacementRegex(SUPPORTED_IMAGE_EXTENSIONS);
 
 async function convertPngsToWebp() {
-  console.log('🖼️  Starting image to WebP conversion...\n');
+  console.log("🖼️  Starting image to WebP conversion...\n");
 
   const stats = {
     converted: 0,
@@ -34,7 +34,7 @@ async function convertPngsToWebp() {
             const webpBuffer = await sharp(originalBuffer).webp({ quality: 90 }).toBuffer();
 
             const webpSize = webpBuffer.length;
-            const webpPath = fullPath.replace(REPLACEMENT_REGEX, '.webp');
+            const webpPath = fullPath.replace(REPLACEMENT_REGEX, ".webp");
 
             await writeFile(webpPath, webpBuffer);
 
@@ -60,7 +60,7 @@ async function convertPngsToWebp() {
 
   await processDirectory(PUBLIC_DIR);
 
-  console.log('\n📊 Conversion Summary:');
+  console.log("\n📊 Conversion Summary:");
   console.log(`   Converted: ${stats.converted} files`);
   console.log(`   Errors: ${stats.errors}`);
   console.log(`   Total original size: ${(stats.totalOriginalSize / 1024 / 1024).toFixed(2)}MB`);

@@ -84,7 +84,7 @@ convert mon-image.png -quality 90 mon-image.webp
 Dans votre fichier `.mdx`, utilisez :
 
 ```mdx
-<ZoomableImage src='/blog/mon-image.webp' alt="Description de l'image" variant='centered' />
+<ZoomableImage src="/blog/mon-image.webp" alt="Description de l'image" variant="centered" />
 ```
 
 Variantes :
@@ -280,11 +280,11 @@ Consultez [templates/TEMPLATE_POST.md](./templates/TEMPLATE_POST.md)
 Frontmatter requis :
 
 ```yaml
-title: 'Titre'
-description: 'Courte description'
-date: '2025-01-12'
+title: "Titre"
+description: "Courte description"
+date: "2025-01-12"
 authors: [iokee, mahzazel] # IDs des auteurs (voir utils/authors.ts)
-image: '/blog/mon-image.webp'
+image: "/blog/mon-image.webp"
 tags: [tag1, tag2]
 ```
 

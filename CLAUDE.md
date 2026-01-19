@@ -79,9 +79,9 @@ Add `.mdx` files to `content/blog/articles/` or `content/wiki/` - routes auto-ge
 Blog frontmatter example:
 
 ```yaml
-title: 'Article Title'
-description: 'Short description'
-date: '2025-01-03'
+title: "Article Title"
+description: "Short description"
+date: "2025-01-03"
 authors: [mathias]
 image: /blog/image.webp
 tags: [tag1, tag2]

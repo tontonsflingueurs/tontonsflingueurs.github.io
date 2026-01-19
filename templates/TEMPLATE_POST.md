@@ -17,7 +17,7 @@ Copiez ce fichier et renommez-le en `.mdx` (par exemple: `mon-article.mdx`)
 ---
 title: Titre de votre article
 description: Une description courte de l'article (apparait dans les aperçus)
-date: '2025-01-03'
+date: "2025-01-03"
 author: Votre Nom
 ---
 
