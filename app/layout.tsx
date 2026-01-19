@@ -1,4 +1,5 @@
 import { ColorThemeProvider } from '@/components/color-theme-provider';
+import { devTitle } from '@/utils/dev-title';
 import { RootProvider } from 'fumadocs-ui/provider/next';
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
@@ -9,18 +10,21 @@ const inter = Inter({
   subsets: ['latin'],
 });
 
+// Titre dynamique selon l'environnement (dev vs prod)
+const defaultTitle = devTitle('Tontons Flingueurs');
+
 export const metadata: Metadata = {
   metadataBase: new URL('https://tontonsflingueurs.github.io'),
-  title: 'Tontons Flingueurs',
+  title: defaultTitle,
   description: 'Wiki et blog communautaire des Tontons Flingueurs',
   openGraph: {
-    title: 'Tontons Flingueurs',
+    title: defaultTitle,
     description: 'Wiki et blog communautaire des Tontons Flingueurs',
     images: [{ url: '/wiki/banniere.webp' }],
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Tontons Flingueurs',
+    title: defaultTitle,
     description: 'Wiki et blog communautaire des Tontons Flingueurs',
     images: ['/wiki/banniere.webp'],
   },

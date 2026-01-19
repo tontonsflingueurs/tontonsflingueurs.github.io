@@ -1,5 +1,5 @@
 {
   "permissions": {
-    "allow": ["mcp__acp__Write", "mcp__acp__Edit", "mcp__acp__Bash"]
+    "allow": ["mcp__acp__Write", "mcp__acp__Edit", "mcp__acp__Bash", "mcp__mcp-server-context7__query-docs"]
   }
 }

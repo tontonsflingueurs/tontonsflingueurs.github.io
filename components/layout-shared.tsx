@@ -1,7 +1,11 @@
+import { devTitle } from '@/utils/dev-title';
 import type { BaseLayoutProps } from 'fumadocs-ui/layouts/shared';
 import Image from 'next/image';
 import packageJson from 'package.json' with { type: 'json' };
 import { ColorThemeSwitcher } from './color-theme-switcher';
+
+// Titre dynamique selon l'environnement (dev vs prod)
+const siteTitle = devTitle('Tontons Flingueurs');
 
 export function baseOptions(): BaseLayoutProps {
   return {
@@ -9,7 +13,7 @@ export function baseOptions(): BaseLayoutProps {
       title: (
         <>
           <Image src='/logo.webp' alt='TTF' width={24} height={24} />
-          <span>Tontons Flingueurs</span>
+          <span>{siteTitle}</span>
         </>
       ),
     },

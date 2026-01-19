@@ -1,6 +1,7 @@
 import { source } from '@/lib/source';
 import { getMDXComponents } from '@/mdx-components';
 import { DEFAULT_WIKI_IMAGE } from '@/utils/constants';
+import { devTitle } from '@/utils/dev-title';
 import { Image } from 'fumadocs-core/framework';
 import { createRelativeLink } from 'fumadocs-ui/mdx';
 import { DocsBody, DocsDescription, DocsPage, DocsTitle, PageLastUpdate } from 'fumadocs-ui/page';
@@ -58,18 +59,19 @@ export async function generateMetadata(props: PageProps): Promise<Metadata> {
   if (!page) notFound();
 
   const imageUrl = page.data.image || DEFAULT_WIKI_IMAGE;
+  const title = devTitle(page.data.title);
 
   return {
-    title: page.data.title,
+    title,
     description: page.data.description,
     openGraph: {
-      title: page.data.title,
+      title,
       description: page.data.description,
       images: [{ url: imageUrl }],
     },
     twitter: {
       card: 'summary_large_image',
-      title: page.data.title,
+      title,
       description: page.data.description,
       images: [imageUrl],
     },

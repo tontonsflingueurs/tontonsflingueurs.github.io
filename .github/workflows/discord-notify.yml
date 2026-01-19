@@ -3,7 +3,7 @@ name: Discord Notification
 on:
   # Se declenche apres le deploy GitHub Pages
   workflow_run:
-    workflows: ["Deploy to GitHub Pages"]
+    workflows: ['Deploy to GitHub Pages']
     types: [completed]
 
 jobs:
@@ -47,32 +47,34 @@ jobs:
           BASE_URL="https://tontonsflingueurs.github.io"
           NEWLINE=$'\n'
 
-          # Variables pour grouper par action (nouveau/modifie) puis par type (wiki/blog)
+          # Variables pour grouper
           WIKI_NEW=""
           WIKI_MOD=""
           BLOG_NEW=""
           BLOG_MOD=""
 
+          # Flag pour savoir quelle image afficher
+          HAS_WIKI=false
+          HAS_BLOG=false
+
           # Traitement des changements Wiki
           if [ -n "$WIKI_CHANGES" ]; then
             while IFS=$'\t' read -r status filepath; do
               [ -z "$filepath" ] && continue
-              # Ignorer les fichiers supprimes (D) car ils n'existent plus
               [ "$status" = "D" ] && continue
-              # Pour les renames (R*), filepath contient "ancien\tnouveau", on prend le nouveau
               if [[ "$status" == R* ]]; then
                 filepath=$(echo "$filepath" | cut -f2)
               fi
               TITLE=$(grep -m1 '^title:' "$filepath" 2>/dev/null | sed 's/title: *"\?\([^"]*\)"\?/\1/')
-              # Si pas de titre trouve, ignorer ce fichier
               [ -z "$TITLE" ] && continue
               SLUG=$(echo "$filepath" | sed 's|content/wiki/||;s|\.mdx$||;s|/index$||')
               [ -z "$SLUG" ] && URL="$BASE_URL/wiki" || URL="$BASE_URL/wiki/$SLUG"
-              # A = Added, R* = Renamed (R100, R087, etc.)
+              HAS_WIKI=true
+
               if [ "$status" = "A" ] || [[ "$status" == R* ]]; then
-                WIKI_NEW="${WIKI_NEW}• ${TITLE}${NEWLINE}${URL}${NEWLINE}"
+                WIKI_NEW="${WIKI_NEW}> 📄 [${TITLE}](${URL})${NEWLINE}"
               else
-                WIKI_MOD="${WIKI_MOD}• ${TITLE}${NEWLINE}${URL}${NEWLINE}"
+                WIKI_MOD="${WIKI_MOD}> 📄 [${TITLE}](${URL})${NEWLINE}"
               fi
             done <<< "$WIKI_CHANGES"
           fi
@@ -81,68 +83,86 @@ jobs:
           if [ -n "$BLOG_CHANGES" ]; then
             while IFS=$'\t' read -r status filepath; do
               [ -z "$filepath" ] && continue
-              # Ignorer les fichiers supprimes (D) car ils n'existent plus
               [ "$status" = "D" ] && continue
-              # Pour les renames (R*), filepath contient "ancien\tnouveau", on prend le nouveau
               if [[ "$status" == R* ]]; then
                 filepath=$(echo "$filepath" | cut -f2)
               fi
               TITLE=$(grep -m1 '^title:' "$filepath" 2>/dev/null | sed 's/title: *"\?\([^"]*\)"\?/\1/')
-              # Si pas de titre trouve, ignorer ce fichier
               [ -z "$TITLE" ] && continue
               SLUG=$(echo "$filepath" | sed 's|content/blog/articles/||;s|\.mdx$||')
               URL="$BASE_URL/blog/$SLUG"
-              # A = Added, R* = Renamed (R100, R087, etc.)
+              HAS_BLOG=true
+
               if [ "$status" = "A" ] || [[ "$status" == R* ]]; then
-                BLOG_NEW="${BLOG_NEW}• ${TITLE}${NEWLINE}${URL}${NEWLINE}"
+                BLOG_NEW="${BLOG_NEW}> 📝 [${TITLE}](${URL})${NEWLINE}"
               else
-                BLOG_MOD="${BLOG_MOD}• ${TITLE}${NEWLINE}${URL}${NEWLINE}"
+                BLOG_MOD="${BLOG_MOD}> 📝 [${TITLE}](${URL})${NEWLINE}"
               fi
             done <<< "$BLOG_CHANGES"
           fi
 
-          # Construction des embeds separes
-          EMBEDS="[]"
-
-          # Embed pour les modifications
-          if [ -n "$WIKI_MOD" ] || [ -n "$BLOG_MOD" ]; then
-            MOD_FIELDS="[]"
-            if [ -n "$WIKI_MOD" ]; then
-              MOD_FIELDS=$(echo "$MOD_FIELDS" | jq --arg name "📚 Wiki" --arg value "$WIKI_MOD" '. += [{"name": $name, "value": $value}]')
-            fi
-            if [ -n "$WIKI_MOD" ] && [ -n "$BLOG_MOD" ]; then
-              MOD_FIELDS=$(echo "$MOD_FIELDS" | jq '. += [{"name": "\u200B", "value": ""}]')
-            fi
-            if [ -n "$BLOG_MOD" ]; then
-              MOD_FIELDS=$(echo "$MOD_FIELDS" | jq --arg name "📰 Blog" --arg value "$BLOG_MOD" '. += [{"name": $name, "value": $value}]')
-            fi
-            EMBEDS=$(echo "$EMBEDS" | jq --argjson fields "$MOD_FIELDS" '. += [{"title": "✏️ Modifié", "color": 15105570, "fields": $fields}]')
+          # Choisir l'image (priorité au blog si présent, sinon wiki)
+          if [ "$HAS_BLOG" = true ]; then
+            IMAGE_URL="$BASE_URL/blog/default.webp"
+          else
+            IMAGE_URL="$BASE_URL/wiki/banniere.webp"
           fi
 
-          # Embed pour les nouveautes
+          # Construction de la description avec sections
+          DESCRIPTION=""
+
+          # Section Nouveau
           if [ -n "$WIKI_NEW" ] || [ -n "$BLOG_NEW" ]; then
-            NEW_FIELDS="[]"
+            DESCRIPTION="${DESCRIPTION}## 🆕 Nouveau${NEWLINE}${NEWLINE}"
             if [ -n "$WIKI_NEW" ]; then
-              NEW_FIELDS=$(echo "$NEW_FIELDS" | jq --arg name "📚 Wiki" --arg value "$WIKI_NEW" '. += [{"name": $name, "value": $value}]')
-            fi
-            if [ -n "$WIKI_NEW" ] && [ -n "$BLOG_NEW" ]; then
-              NEW_FIELDS=$(echo "$NEW_FIELDS" | jq '. += [{"name": "\u200B", "value": ""}]')
+              DESCRIPTION="${DESCRIPTION}**📚 Wiki**${NEWLINE}${WIKI_NEW}${NEWLINE}"
             fi
             if [ -n "$BLOG_NEW" ]; then
-              NEW_FIELDS=$(echo "$NEW_FIELDS" | jq --arg name "📰 Blog" --arg value "$BLOG_NEW" '. += [{"name": $name, "value": $value}]')
+              DESCRIPTION="${DESCRIPTION}**📰 Blog**${NEWLINE}${BLOG_NEW}${NEWLINE}"
             fi
-            EMBEDS=$(echo "$EMBEDS" | jq --argjson fields "$NEW_FIELDS" '. += [{"title": "🆕 Nouveau", "color": 5763719, "fields": $fields}]')
           fi
 
-          # Send Discord webhook avec @everyone
+          # Séparateur si les deux sections existent
+          if { [ -n "$WIKI_NEW" ] || [ -n "$BLOG_NEW" ]; } && { [ -n "$WIKI_MOD" ] || [ -n "$BLOG_MOD" ]; }; then
+            DESCRIPTION="${DESCRIPTION}───────────────${NEWLINE}${NEWLINE}"
+          fi
+
+          # Section Modifié
+          if [ -n "$WIKI_MOD" ] || [ -n "$BLOG_MOD" ]; then
+            DESCRIPTION="${DESCRIPTION}## ✏️ Modifié${NEWLINE}${NEWLINE}"
+            if [ -n "$WIKI_MOD" ]; then
+              DESCRIPTION="${DESCRIPTION}**📚 Wiki**${NEWLINE}${WIKI_MOD}${NEWLINE}"
+            fi
+            if [ -n "$BLOG_MOD" ]; then
+              DESCRIPTION="${DESCRIPTION}**📰 Blog**${NEWLINE}${BLOG_MOD}${NEWLINE}"
+            fi
+          fi
+
+          TIMESTAMP=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+
+          # Payload avec un seul embed bien formaté
           PAYLOAD=$(jq -n \
-            --argjson embeds "$EMBEDS" \
+            --arg desc "$DESCRIPTION" \
+            --arg img "$IMAGE_URL" \
+            --arg ts "$TIMESTAMP" \
+            --arg url "$BASE_URL" \
             '{
-              "content": "@everyone **🚀 Mise à jour du site !**",
+              "content": "@everyone",
               "allowed_mentions": {
                 "parse": ["everyone"]
               },
-              "embeds": $embeds
+              "embeds": [
+                {
+                  "title": "🚀 Mise à jour du site !",
+                  "url": $url,
+                  "description": $desc,
+                  "color": 5793266,
+                  "image": {
+                    "url": $img
+                  },
+                  "timestamp": $ts
+                }
+              ]
             }')
 
           curl -X POST "$DISCORD_WEBHOOK_URL" \
