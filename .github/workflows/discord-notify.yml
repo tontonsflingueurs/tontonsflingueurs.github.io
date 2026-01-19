@@ -47,17 +47,12 @@ jobs:
           BASE_URL="https://tontonsflingueurs.github.io"
           NEWLINE=$'\n'
 
-          # Variables pour grouper
           WIKI_NEW=""
           WIKI_MOD=""
           BLOG_NEW=""
           BLOG_MOD=""
 
-          # Flag pour savoir quelle image afficher
-          HAS_WIKI=false
-          HAS_BLOG=false
-
-          # Traitement des changements Wiki
+          # Traitement Wiki
           if [ -n "$WIKI_CHANGES" ]; then
             while IFS=$'\t' read -r status filepath; do
               [ -z "$filepath" ] && continue
@@ -69,17 +64,16 @@ jobs:
               [ -z "$TITLE" ] && continue
               SLUG=$(echo "$filepath" | sed 's|content/wiki/||;s|\.mdx$||;s|/index$||')
               [ -z "$SLUG" ] && URL="$BASE_URL/wiki" || URL="$BASE_URL/wiki/$SLUG"
-              HAS_WIKI=true
 
               if [ "$status" = "A" ] || [[ "$status" == R* ]]; then
-                WIKI_NEW="${WIKI_NEW}> 📄 [${TITLE}](${URL})${NEWLINE}"
+                WIKI_NEW="${WIKI_NEW}• [${TITLE}](<${URL}>)${NEWLINE}"
               else
-                WIKI_MOD="${WIKI_MOD}> 📄 [${TITLE}](${URL})${NEWLINE}"
+                WIKI_MOD="${WIKI_MOD}• [${TITLE}](<${URL}>)${NEWLINE}"
               fi
             done <<< "$WIKI_CHANGES"
           fi
 
-          # Traitement des changements Blog
+          # Traitement Blog
           if [ -n "$BLOG_CHANGES" ]; then
             while IFS=$'\t' read -r status filepath; do
               [ -z "$filepath" ] && continue
@@ -91,76 +85,57 @@ jobs:
               [ -z "$TITLE" ] && continue
               SLUG=$(echo "$filepath" | sed 's|content/blog/articles/||;s|\.mdx$||')
               URL="$BASE_URL/blog/$SLUG"
-              HAS_BLOG=true
 
               if [ "$status" = "A" ] || [[ "$status" == R* ]]; then
-                BLOG_NEW="${BLOG_NEW}> 📝 [${TITLE}](${URL})${NEWLINE}"
+                BLOG_NEW="${BLOG_NEW}• [${TITLE}](<${URL}>)${NEWLINE}"
               else
-                BLOG_MOD="${BLOG_MOD}> 📝 [${TITLE}](${URL})${NEWLINE}"
+                BLOG_MOD="${BLOG_MOD}• [${TITLE}](<${URL}>)${NEWLINE}"
               fi
             done <<< "$BLOG_CHANGES"
           fi
 
-          # Choisir l'image (priorité au blog si présent, sinon wiki)
-          if [ "$HAS_BLOG" = true ]; then
-            IMAGE_URL="$BASE_URL/blog/default.webp"
-          else
-            IMAGE_URL="$BASE_URL/wiki/banniere.webp"
-          fi
-
-          # Construction de la description avec sections
-          DESCRIPTION=""
+          # Construction du message
+          MESSAGE="🚀 **Mise à jour du site !** @everyone${NEWLINE}${NEWLINE}"
 
           # Section Nouveau
           if [ -n "$WIKI_NEW" ] || [ -n "$BLOG_NEW" ]; then
-            DESCRIPTION="${DESCRIPTION}## 🆕 Nouveau${NEWLINE}${NEWLINE}"
+            MESSAGE="${MESSAGE}═══════════════════${NEWLINE}📗 **NOUVEAU**${NEWLINE}═══════════════════${NEWLINE}${NEWLINE}"
             if [ -n "$WIKI_NEW" ]; then
-              DESCRIPTION="${DESCRIPTION}**📚 Wiki**${NEWLINE}${WIKI_NEW}${NEWLINE}"
+              MESSAGE="${MESSAGE}**Wiki**${NEWLINE}${WIKI_NEW}${NEWLINE}"
             fi
             if [ -n "$BLOG_NEW" ]; then
-              DESCRIPTION="${DESCRIPTION}**📰 Blog**${NEWLINE}${BLOG_NEW}${NEWLINE}"
+              MESSAGE="${MESSAGE}**Blog**${NEWLINE}${BLOG_NEW}${NEWLINE}"
             fi
-          fi
-
-          # Séparateur si les deux sections existent
-          if { [ -n "$WIKI_NEW" ] || [ -n "$BLOG_NEW" ]; } && { [ -n "$WIKI_MOD" ] || [ -n "$BLOG_MOD" ]; }; then
-            DESCRIPTION="${DESCRIPTION}───────────────${NEWLINE}${NEWLINE}"
           fi
 
           # Section Modifié
           if [ -n "$WIKI_MOD" ] || [ -n "$BLOG_MOD" ]; then
-            DESCRIPTION="${DESCRIPTION}## ✏️ Modifié${NEWLINE}${NEWLINE}"
+            MESSAGE="${MESSAGE}═══════════════════${NEWLINE}📝 **MODIFIÉ**${NEWLINE}═══════════════════${NEWLINE}${NEWLINE}"
             if [ -n "$WIKI_MOD" ]; then
-              DESCRIPTION="${DESCRIPTION}**📚 Wiki**${NEWLINE}${WIKI_MOD}${NEWLINE}"
+              MESSAGE="${MESSAGE}**Wiki**${NEWLINE}${WIKI_MOD}${NEWLINE}"
             fi
             if [ -n "$BLOG_MOD" ]; then
-              DESCRIPTION="${DESCRIPTION}**📰 Blog**${NEWLINE}${BLOG_MOD}${NEWLINE}"
+              MESSAGE="${MESSAGE}**Blog**${NEWLINE}${BLOG_MOD}${NEWLINE}"
             fi
           fi
 
-          TIMESTAMP=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+          # Ajout d'un espace avant la bannière (caractère invisible)
+          MESSAGE="${MESSAGE}‎"
 
-          # Payload avec un seul embed bien formaté
+          # Envoi avec embed pour l'image
           PAYLOAD=$(jq -n \
-            --arg desc "$DESCRIPTION" \
-            --arg img "$IMAGE_URL" \
-            --arg ts "$TIMESTAMP" \
-            --arg url "$BASE_URL" \
+            --arg content "$MESSAGE" \
+            --arg img "$BASE_URL/wiki/banniere.webp" \
             '{
-              "content": "@everyone",
+              "content": $content,
               "allowed_mentions": {
                 "parse": ["everyone"]
               },
               "embeds": [
                 {
-                  "title": "🚀 Mise à jour du site !",
-                  "url": $url,
-                  "description": $desc,
-                  "color": 5793266,
                   "image": {
                     "url": $img
-                  },
-                  "timestamp": $ts
+                  }
                 }
               ]
             }')
