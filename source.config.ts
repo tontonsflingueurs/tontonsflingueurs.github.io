@@ -8,12 +8,13 @@ const blogFrontmatterSchema = frontmatterSchema.extend({
   date: z.string().optional(),
   authors: z.array(z.string()).optional(),
   image: z.string().optional(),
-  tags: z.array(z.string()).optional(),
+  tags: z.array(z.string()).default(["annonce"]),
 });
 
-// Schema etendu pour le wiki (avec image optionnelle)
+// Schema etendu pour le wiki (avec image et auteurs optionnels)
 const wikiFrontmatterSchema = frontmatterSchema.extend({
   image: z.string().optional(),
+  authors: z.array(z.string()).optional(),
 });
 
 // Collection Wiki (docs)

@@ -1,3 +1,4 @@
+import { AuthorBanner } from "@/components/author-banner";
 import { PageActions } from "@/components/page-actions";
 import { ZoomableImage } from "@/components/zoomable-image";
 import { blogSource } from "@/lib/source";
@@ -7,7 +8,7 @@ import { devTitle } from "@/utils/dev-title";
 import { estimateReadingTime } from "@/utils/reading-time";
 import { DocsBody, DocsDescription, DocsPage, DocsTitle, PageLastUpdate } from "fumadocs-ui/page";
 import type { Metadata } from "next";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 
 interface PageProps {
   params: Promise<{ slug?: string[] }>;
@@ -16,7 +17,11 @@ interface PageProps {
 export default async function BlogPostPage(props: PageProps) {
   const params = await props.params;
   const page = blogSource.getPage(params.slug);
-  if (!page) notFound();
+
+  // Redirige vers /blog si la page n'existe pas
+  if (!page) {
+    redirect("/blog");
+  }
   const lastModifiedTime = page.data.lastModified;
 
   const MDX = page.data.body;
@@ -40,7 +45,7 @@ export default async function BlogPostPage(props: PageProps) {
   // Page d'article
   return (
     <DocsPage toc={page.data.toc} tableOfContent={{ style: "clerk" }}>
-      <ZoomableImage src={imageUrl} alt={page.data.title} variant="banner" />
+      <ZoomableImage src={imageUrl} alt={page.data.title} variant="wide-banner" />
 
       <DocsTitle>{page.data.title}</DocsTitle>
       <div className="flex flex-col lg:flex-row lg:flex-wrap lg:items-center gap-2 text-sm text-fd-muted-foreground -mt-2">
@@ -57,12 +62,6 @@ export default async function BlogPostPage(props: PageProps) {
           )}
           <span>•</span>
           <span>{estimateReadingTime(page.data.structuredData)} min de lecture</span>
-          {page.data.authors && page.data.authors.length > 0 && (
-            <>
-              <span>•</span>
-              <span>par {page.data.authors.join(", ")}</span>
-            </>
-          )}
         </div>
         <PageActions markdownUrl={`/api/raw${page.url}`} githubUrl={githubEditUrl} />
       </div>
@@ -72,7 +71,10 @@ export default async function BlogPostPage(props: PageProps) {
         <MDX components={getMDXComponents({})} />
       </DocsBody>
 
-      <div className="mt-12 pt-6 border-t border-fd-border inline-flex items-center justify-between w-full">
+      {/* Bandeau auteur(s) */}
+      <AuthorBanner authorIds={page.data.authors} />
+
+      <div className="pt-4 border-t border-fd-border inline-flex items-center justify-between w-full">
         {lastModifiedTime && <PageLastUpdate date={lastModifiedTime} />}
       </div>
     </DocsPage>

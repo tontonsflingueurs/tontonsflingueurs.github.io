@@ -1,3 +1,4 @@
+import { AuthorBanner } from "@/components/author-banner";
 import { source } from "@/lib/source";
 import { getMDXComponents } from "@/mdx-components";
 import { DEFAULT_WIKI_IMAGE } from "@/utils/constants";
@@ -6,7 +7,7 @@ import { Image } from "fumadocs-core/framework";
 import { createRelativeLink } from "fumadocs-ui/mdx";
 import { DocsBody, DocsDescription, DocsPage, DocsTitle, PageLastUpdate } from "fumadocs-ui/page";
 import type { Metadata } from "next";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 
 interface PageProps {
   params: Promise<{ slug?: string[] }>;
@@ -15,7 +16,11 @@ interface PageProps {
 export default async function Page(props: PageProps) {
   const params = await props.params;
   const page = source.getPage(params.slug);
-  if (!page) notFound();
+
+  // Redirige vers /wiki si la page n'existe pas
+  if (!page) {
+    redirect("/wiki");
+  }
   const lastModifiedTime = page.data.lastModified;
 
   const MDX = page.data.body;
@@ -42,7 +47,10 @@ export default async function Page(props: PageProps) {
         />
       </DocsBody>
 
-      <div className="mt-12 pt-6 border-t border-fd-border inline-flex items-center justify-between w-full">
+      {/* Bandeau auteur(s) */}
+      <AuthorBanner authorIds={page.data.authors} />
+
+      <div className="pt-4 border-t border-fd-border inline-flex items-center justify-between w-full">
         {lastModifiedTime && <PageLastUpdate date={lastModifiedTime} />}
       </div>
     </DocsPage>

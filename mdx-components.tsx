@@ -14,6 +14,7 @@ export function getMDXComponents(components?: MDXComponents): MDXComponents {
     ZoomableImage,
     img: (props) => <ImageZoom {...(props as any)} />,
     strong: (props) => <strong className="text-fd-primary font-bold" {...props} />,
+    em: (props) => <em className="text-fd-italic italic" {...props} />,
     ...components,
   };
 }

@@ -73,6 +73,10 @@ jobs:
           fi
 
           # Traitement Blog
+          BLOG_COUNT=0
+          BLOG_SINGLE_FILEPATH=""
+          BLOG_SINGLE_TITLE=""
+          BLOG_SINGLE_URL=""
           if [ -n "$BLOG_CHANGES" ]; then
             while IFS=$'\t' read -r status filepath; do
               [ -z "$filepath" ] && continue
@@ -80,10 +84,14 @@ jobs:
               if [[ "$status" == R* ]]; then
                 filepath=$(echo "$filepath" | cut -f2)
               fi
+              BLOG_COUNT=$((BLOG_COUNT + 1))
+              BLOG_SINGLE_FILEPATH="$filepath"
               TITLE=$(grep -m1 '^title:' "$filepath" 2>/dev/null | sed 's/title: *"\?\([^"]*\)"\?/\1/')
               [ -z "$TITLE" ] && continue
               SLUG=$(echo "$filepath" | sed 's|content/blog/articles/||;s|\.mdx$||')
               URL="$BASE_URL/blog/$SLUG"
+              BLOG_SINGLE_TITLE="$TITLE"
+              BLOG_SINGLE_URL="$URL"
 
               if [ "$status" = "A" ] || [[ "$status" == R* ]]; then
                 BLOG_NEW="${BLOG_NEW}• [${TITLE}](<${URL}>)${NEWLINE}"
@@ -120,23 +128,49 @@ jobs:
             fi
           fi
 
-          # Espace avant la bannière (caractère invisible pour que Discord garde la ligne)
-          MESSAGE="${MESSAGE}"
+          # Envoi du webhook Discord
+          if [ "$BLOG_COUNT" -eq 1 ] && [ -z "$WIKI_CHANGES" ]; then
+            # Un seul article blog : embed avec image cliquable
+            BLOG_IMAGE=$(grep -m1 '^image:' "$BLOG_SINGLE_FILEPATH" 2>/dev/null | sed 's/image: *"\?\([^"]*\)"\?/\1/' | xargs)
+            if [ -z "$BLOG_IMAGE" ]; then
+              BLOG_IMAGE="/blog/default.webp"
+            fi
+            IMAGE_URL="${BASE_URL}${BLOG_IMAGE}"
 
-          # Télécharger la bannière
-          curl -sL -o banniere.webp "$BASE_URL/wiki/banniere.webp"
+            PAYLOAD=$(jq -n \
+              --arg content "🚀 **Mise à jour du site !** @everyone${NEWLINE}${NEWLINE}Venez découvrir le nouvel article ! 👇" \
+              --arg title "$BLOG_SINGLE_TITLE" \
+              --arg url "$BLOG_SINGLE_URL" \
+              --arg image "$IMAGE_URL" \
+              '{
+                "content": $content,
+                "embeds": [{
+                  "title": $title,
+                  "url": $url,
+                  "image": { "url": $image }
+                }],
+                "allowed_mentions": {
+                  "parse": ["everyone"]
+                }
+              }')
 
-          # Créer le payload JSON
-          PAYLOAD=$(jq -n \
-            --arg content "$MESSAGE" \
-            '{
-              "content": $content,
-              "allowed_mentions": {
-                "parse": ["everyone"]
-              }
-            }')
+            curl -X POST "$DISCORD_WEBHOOK_URL" \
+              -H "Content-Type: application/json" \
+              -d "$PAYLOAD"
+          else
+            # Plusieurs changements : message texte + bannière en attachement
+            curl -sL -o banniere.webp "$BASE_URL/wiki/banniere.webp"
 
-          # Envoyer avec l'image en attachment
-          curl -X POST "$DISCORD_WEBHOOK_URL" \
-            -F "payload_json=$PAYLOAD" \
-            -F "file=@banniere.webp"
+            PAYLOAD=$(jq -n \
+              --arg content "$MESSAGE" \
+              '{
+                "content": $content,
+                "allowed_mentions": {
+                  "parse": ["everyone"]
+                }
+              }')
+
+            curl -X POST "$DISCORD_WEBHOOK_URL" \
+              -F "payload_json=$PAYLOAD" \
+              -F "file=@banniere.webp"
+          fi

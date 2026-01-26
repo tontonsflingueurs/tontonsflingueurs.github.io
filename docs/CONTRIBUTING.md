@@ -10,7 +10,6 @@ Merci de votre intérêt pour contribuer au wiki TTF ! Les contributions sont le
 
 - Aucun logiciel à installer
 - Interface simple et visuelle
-- Aperçu en temps réel
 
 **Étape par étape :**
 
@@ -19,21 +18,42 @@ Merci de votre intérêt pour contribuer au wiki TTF ! Les contributions sont le
 1. Cliquez sur le bouton **Fork** en haut à droite de [github.com/tontonsflingueurs/wiki](https://github.com/tontonsflingueurs/wiki)
 2. Cela crée une copie du projet dans votre compte GitHub
 
-#### Étape 2 : Créer ou modifier du contenu
+#### Étape 2 : Préparer vos images en WebP (si besoin)
+
+**⚠️ IMPORTANT : Les images doivent être en WebP !**
+
+Les images PNG/JPG doivent être converties en WebP pour optimiser les performances (60-70% de réduction de taille).
+
+**Convertir une image :**
+
+1. Allez sur [Convertio](https://convertio.co/fr/png-webp/) ou [CloudConvert](https://cloudconvert.com/png-to-webp)
+2. Uploadez votre image PNG/JPG
+3. Sélectionnez "WebP" comme format de sortie
+4. Cliquez "Convertir"
+5. Téléchargez le fichier `.webp`
+
+#### Étape 3 : Upload les images
+
+1. Dans votre fork GitHub, allez dans le bon dossier :
+   - `public/blog/` pour les images d'articles
+   - `public/wiki/` pour les images de guides
+2. Cliquez **Add file** → **Upload files**
+3. Téléchargez votre fichier `.webp`
+4. Cliquez **Commit changes**
+
+#### Étape 4 : Créer ou modifier du contenu
 
 1. Naviguez dans votre fork (`https://github.com/VOTRE_USERNAME/wiki`)
 2. Allez dans le dossier pertinent :
    - `content/wiki/` pour les guides
    - `content/blog/articles/` pour les articles
-3. Cliquez sur **Add file** ou éditer un fichier existant
-4. Modifiez le contenu
+3. Cliquez sur **Add file** → **Create new file** ou éditez un fichier existant
 
-##### Exemple : Créer un guide wiki
+##### Pour un guide Wiki
 
-```
-Dossier : content/wiki/
-Nom du fichier : mon-guide.mdx
+Créez un fichier `mon-guide.mdx` dans `content/wiki/` :
 
+```mdx
 ---
 title: Titre de votre guide
 description: Une description courte
@@ -43,74 +63,65 @@ icon: BookOpen
 ## Introduction
 
 Votre contenu ici...
+
+<ZoomableImage src="/wiki/mon-image.webp" alt="Description" />
 ```
 
-#### Étape 3 : ⚠️ Gérer les images (IMPORTANT)
+##### Pour un article de Blog
 
-**Avant de mettre à jour une image, convertissez-la en WebP !**
-
-Les images doivent être en WebP pour optimiser les performances (60-70% de réduction de taille).
-
-##### Convertir une image
-
-**Option A : Outils en ligne** (gratuit, simple)
-
-- [CloudConvert](https://cloudconvert.com/png-to-webp)
-- [Convertio](https://convertio.co/png-webp/)
-- [Online-Convert](https://image.online-convert.com/convert-to-webp)
-
-Étapes :
-
-1. Uploader votre image PNG/JPG
-2. Sélectionner "WebP" comme format
-3. Cliquer "Convert"
-4. Télécharger le fichier `.webp`
-
-**Option B : Ligne de commande** (si vous avez `imagemagick`)
-
-```bash
-convert mon-image.png -quality 90 mon-image.webp
-```
-
-#### Étape 4 : Upload l'image
-
-1. Dans votre fork GitHub, allez dans `public/blog/` ou `public/wiki/`
-2. Cliquez **Add file** → **Upload files**
-3. Téléchargez votre `.webp`
-4. Cliquez **Commit changes**
-
-#### Étape 5 : Référencer l'image dans le contenu
-
-Dans votre fichier `.mdx`, utilisez :
+Créez un fichier au format `YYYY-MM-DD-titre.mdx` dans `content/blog/articles/` :
 
 ```mdx
-<ZoomableImage src="/blog/mon-image.webp" alt="Description de l'image" variant="centered" />
+---
+title: "Titre de votre article"
+description: "Une description courte"
+date: "2025-01-20"
+authors: [iokee]
+tags: [Annonce]
+---
+
+Votre contenu ici...
+
+<ZoomableImage src="/blog/mon-image.webp" alt="Description" />
 ```
 
-Variantes :
+**Champs du frontmatter (blog) :**
 
-- `centered` : Centrée (par défaut)
-- `banner` : Pleine largeur
+| Champ         | Obligatoire | Description                              |
+| ------------- | ----------- | ---------------------------------------- |
+| `title`       | Oui         | Titre de l'article                       |
+| `description` | Oui         | Description courte                       |
+| `date`        | Oui         | Date au format `"YYYY-MM-DD"`            |
+| `authors`     | Non         | IDs des auteurs (ex: `[iokee, mathias]`) |
+| `image`       | Non         | Bannière (défaut: `/blog/default.webp`)  |
+| `tags`        | Non         | Catégories (défaut: `[Annonce]`)         |
 
-**Vérifier l'image s'affiche bien :**
+#### Étape 5 : Prévisualiser
 
-- Cliquez sur le fichier image dans GitHub
-- Cliquez sur **Display the rich diff** pour voir un aperçu
+- Cliquez sur l'onglet **Preview** pour voir un aperçu du rendu Markdown
 
-#### Étape 6 : Créer une Pull Request (PR)
+**⚠️ ATTENTION :** Les images et bannières **ne s'afficheront PAS** dans le preview GitHub. C'est normal ! Pour voir le rendu complet avec les images, utilisez la méthode de développement local (voir ci-dessous).
+
+#### Étape 6 : Sauvegarder (Commit)
+
+1. En bas de la page, ajoutez un message de commit clair (ex: "Ajout guide sur les cartes")
+2. Cliquez **Commit changes**
+
+#### Étape 7 : Créer une Pull Request (PR)
 
 1. Allez sur votre fork
 2. Cliquez sur **Contribute** → **Open pull request**
 3. Remplissez :
-   - **Titre** : Description courte
-   - **Description** : Expliquer ce que vous avez ajouté/modifié
+   - **Titre** : Description courte (ex: "Ajout guide stratégie arènes")
+   - **Description** : Expliquez ce que vous avez ajouté/modifié
 4. Cliquez **Create pull request**
 
-#### Étape 7 : Attendre la validation
+#### Étape 8 : Attendre la validation et le déploiement
 
 - Un mainteneur révise votre PR
 - Des questions/suggestions peuvent être posées
 - Une fois approuvée, elle est fusionnée automatiquement
+- Le déploiement se fait automatiquement après fusion
 - Votre contribution apparaît sur le wiki !
 
 ---
@@ -120,7 +131,7 @@ Variantes :
 **Avantages :**
 
 - Plus de contrôle et de flexibilité
-- Aperçu en temps réel localement
+- Aperçu en temps réel localement (images incluses !)
 - Optimisation automatique des images
 - Meilleure expérience de dev
 
@@ -259,12 +270,12 @@ Utilisez les templates pour démarrer :
 
 ### Guide Wiki
 
-Consultez [templates/TEMPLATE_GUIDE.md](./templates/TEMPLATE_GUIDE.md)
+Consultez [templates/TEMPLATE_GUIDE.md](../templates/TEMPLATE_GUIDE.md)
 
 Structure recommandée :
 
 - Introduction courte
-- Sections principales (###)
+- Sections principales (##)
 - Conclusion
 - Liens vers pages connexes
 
@@ -275,17 +286,17 @@ Plus : https://lucide.dev/icons
 
 ### Article de Blog
 
-Consultez [templates/TEMPLATE_POST.md](./templates/TEMPLATE_POST.md)
+Consultez [templates/TEMPLATE_POST.md](../templates/TEMPLATE_POST.md)
 
-Frontmatter requis :
+Frontmatter :
 
 ```yaml
 title: "Titre"
 description: "Courte description"
-date: "2025-01-12"
-authors: [iokee, mahzazel] # IDs des auteurs (voir utils/authors.ts)
-image: "/blog/mon-image.webp"
-tags: [tag1, tag2]
+date: "2025-01-20"
+authors: [iokee, mathias] # Optionnel - IDs des auteurs
+image: "/blog/image.webp" # Optionnel - bannière
+tags: [tag1, tag2] # Optionnel - défaut: [Annonce]
 ```
 
 ---
@@ -295,9 +306,9 @@ tags: [tag1, tag2]
 Avant de créer une PR, vérifiez :
 
 - [ ] **Contenu** : Le texte est clair et bien structuré
-- [ ] **Images** : Sont en WebP et bien référencées
+- [ ] **Images** : Sont en `.webp` et bien référencées
 - [ ] **Liens** : Pointent vers les bonnes pages
-- [ ] **Aperçu** : Testé localement (ou via GitHub Web)
+- [ ] **Aperçu** : Testé localement (ou via GitHub Preview pour le texte)
 - [ ] **Pas de typos** : Relecture rapide
 - [ ] **Métadonnées** : Le frontmatter est complet
 - [ ] **Originalité** : Pas de contenu dupliqué

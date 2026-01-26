@@ -1,5 +1,6 @@
 "use client";
 
+import { getImage } from "@/utils/images";
 import { ImageZoom } from "fumadocs-ui/components/image-zoom";
 import { Fullscreen } from "lucide-react";
 import { useEffect, useState } from "react";
@@ -35,13 +36,39 @@ function queueImagePreload(src: string): Promise<void> {
   });
 }
 
-interface ZoomableImageProps {
+// Props avec ID (pour les articles MDX)
+interface ZoomableImagePropsWithId {
+  id: string;
+  src?: never;
+  alt?: never;
+  variant?: "centered" | "banner" | "wide-banner" | "compact";
+}
+
+// Props directes (pour les pages dynamiques comme la couverture d'article)
+interface ZoomableImagePropsWithSrc {
+  id?: never;
   src: string;
   alt: string;
   variant?: "centered" | "banner" | "wide-banner" | "compact";
 }
 
-export function ZoomableImage({ src, alt, variant = "centered" }: ZoomableImageProps) {
+type ZoomableImageProps = ZoomableImagePropsWithId | ZoomableImagePropsWithSrc;
+
+export function ZoomableImage(props: ZoomableImageProps) {
+  const { variant = "centered" } = props;
+
+  // Résolution des métadonnées selon le mode
+  let src: string;
+  let alt: string;
+
+  if ("id" in props && props.id) {
+    const meta = getImage(props.id);
+    src = meta.src;
+    alt = meta.alt;
+  } else {
+    src = props.src ?? "";
+    alt = props.alt ?? "";
+  }
   const [isLoaded, setIsLoaded] = useState(false);
 
   const isBanner = variant === "banner";

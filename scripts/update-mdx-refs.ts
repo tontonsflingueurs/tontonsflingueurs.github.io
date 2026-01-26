@@ -9,6 +9,8 @@ const FILE_PATH_REGEX = generateFilePathRegex(SUPPORTED_IMAGE_EXTENSIONS);
 const searchPatterns = {
   dirs: ["content", "components", "utils", "app"],
   extensions: [".mdx", ".jsx", ".tsx", ".ts"],
+  // Fichiers a exclure (contiennent des URLs externes avec .png qui ne doivent pas etre converties)
+  excludeFiles: ["authors.ts"],
 };
 
 async function findFilesWithImageReferences(): Promise<string[]> {
@@ -27,6 +29,10 @@ async function findFilesWithImageReferences(): Promise<string[]> {
             await scanDirectory(fullPath);
           }
         } else if (entry.isFile()) {
+          // Verifie si le fichier est dans la liste d'exclusion
+          if (searchPatterns.excludeFiles.includes(entry.name)) {
+            continue;
+          }
           const ext = join("", entry.name).slice(join("", entry.name).lastIndexOf("."));
           if (searchPatterns.extensions.includes(ext)) {
             try {
