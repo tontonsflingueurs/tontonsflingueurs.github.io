@@ -1,16 +1,16 @@
+import { generateFilePathRegex, SUPPORTED_IMAGE_EXTENSIONS } from "@/features/images";
 import { readdir, readFile, writeFile } from "fs/promises";
 import { join, relative } from "path";
-import { generateFilePathRegex, SUPPORTED_IMAGE_EXTENSIONS } from "../utils/image-extensions";
 
 const ROOT_DIR = process.cwd();
 const FILE_PATH_REGEX = generateFilePathRegex(SUPPORTED_IMAGE_EXTENSIONS);
 
 // Search patterns: directories and file extensions to scan
 const searchPatterns = {
-  dirs: ["content", "components", "utils", "app"],
+  dirs: ["content", "components", "features", "app", "config"],
   extensions: [".mdx", ".jsx", ".tsx", ".ts"],
   // Fichiers a exclure (contiennent des URLs externes avec .png qui ne doivent pas etre converties)
-  excludeFiles: ["authors.ts"],
+  excludeFiles: ["authors.ts", "image-extensions.ts"],
 };
 
 async function findFilesWithImageReferences(): Promise<string[]> {

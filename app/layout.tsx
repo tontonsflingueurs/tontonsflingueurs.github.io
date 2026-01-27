@@ -1,5 +1,5 @@
-import { ColorThemeProvider } from "@/components/color-theme-provider";
-import { devTitle } from "@/utils/dev-title";
+import { devTitle } from "@/config/dev";
+import { ColorThemeProvider } from "@/features/theme";
 import { RootProvider } from "fumadocs-ui/provider/next";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";

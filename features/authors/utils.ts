@@ -1,25 +1,5 @@
-export const DEFAULT_AVATAR = "/logo.webp";
-
-export const authors = {
-  mahzazel: {
-    name: "Mahzazel",
-    github: "mathiasdotdev",
-    role: "Responsable Rush Royale",
-  },
-  perpi: {
-    name: "Perpi lyonnais",
-    github: "mathiasdotdev",
-    role: "Responsable Rush Royale",
-  },
-} as const;
-
-export type AuthorId = keyof typeof authors;
-
-export interface Author {
-  name: string;
-  github?: string;
-  role?: string;
-}
+import { authors, DEFAULT_AVATAR } from "./data";
+import type { Author } from "./types";
 
 export function getAuthor(id: string): Author | null {
   return (authors as Record<string, Author>)[id] ?? null;

@@ -1,3 +1,5 @@
+import type { ColorTheme } from "./types";
+
 // La seule source de verite pour les themes
 // Pour ajouter un theme:
 // 1. Ajouter l'entree ici (avec la couleur primary pour l'apercu)
@@ -11,9 +13,7 @@ export const themes = [
   { value: "purple", label: "Violet", preview: "hsl(270, 70%, 50%)" },
   { value: "blue", label: "Bleu", preview: "hsl(230, 80%, 62%)" },
   { value: "black", label: "Noir", preview: "hsl(0, 0%, 20%)" },
-] as const;
-
-export type ColorTheme = (typeof themes)[number]["value"];
+] as const satisfies readonly { value: ColorTheme; label: string; preview: string }[];
 
 export const STORAGE_KEY = "color-theme";
 export const DEFAULT_THEME: ColorTheme = "red";

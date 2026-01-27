@@ -1,9 +1,9 @@
 "use client";
 
-import { getImage } from "@/utils/images";
 import { ImageZoom } from "fumadocs-ui/components/image-zoom";
 import { Fullscreen } from "lucide-react";
 import { useEffect, useState } from "react";
+import { getImage } from "../data";
 
 // File d'attente globale pour le préchargement séquentiel
 const imageQueue: Array<{ src: string; resolve: () => void }> = [];

@@ -1,7 +1,7 @@
+import { ColorThemeSwitcher } from "@/features/theme";
 import type { BaseLayoutProps } from "fumadocs-ui/layouts/shared";
 import Image from "next/image";
 import packageJson from "package.json" with { type: "json" };
-import { ColorThemeSwitcher } from "./color-theme-switcher";
 
 const siteTitle = "Tontons Flingueurs";
 

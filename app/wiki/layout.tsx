@@ -1,4 +1,4 @@
-import { baseOptions } from "@/components/layout-shared";
+import { baseOptions } from "@/config/layout";
 import { source } from "@/lib/source";
 import { DocsLayout } from "fumadocs-ui/layouts/notebook";
 import type { PropsWithChildren } from "react";
@@ -27,7 +27,8 @@ export default function Layout({ children }: PropsWithChildren) {
             url: "/blog",
           },
         ],
-      }}>
+      }}
+    >
       {children}
     </DocsLayout>
   );

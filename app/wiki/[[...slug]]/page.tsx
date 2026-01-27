@@ -1,8 +1,8 @@
-import { AuthorBanner } from "@/components/author-banner";
+import { DEFAULT_WIKI_IMAGE } from "@/config/constants";
+import { devTitle } from "@/config/dev";
+import { AuthorBanner } from "@/features/authors";
 import { source } from "@/lib/source";
 import { getMDXComponents } from "@/mdx-components";
-import { DEFAULT_WIKI_IMAGE } from "@/utils/constants";
-import { devTitle } from "@/utils/dev-title";
 import { Image } from "fumadocs-core/framework";
 import { createRelativeLink } from "fumadocs-ui/mdx";
 import { DocsBody, DocsDescription, DocsPage, DocsTitle, PageLastUpdate } from "fumadocs-ui/page";

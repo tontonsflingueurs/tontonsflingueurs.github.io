@@ -1,7 +1,7 @@
+import { generateFileReplacementRegex, SUPPORTED_IMAGE_EXTENSIONS } from "@/features/images";
 import { readdir, readFile, writeFile } from "fs/promises";
 import { extname, join } from "path";
 import sharp from "sharp";
-import { generateFileReplacementRegex, SUPPORTED_IMAGE_EXTENSIONS } from "../utils/image-extensions";
 
 const PUBLIC_DIR = join(process.cwd(), "public");
 const REPLACEMENT_REGEX = generateFileReplacementRegex(SUPPORTED_IMAGE_EXTENSIONS);

@@ -1,8 +1,8 @@
 "use client";
 
-import { getAuthorsFromIds, getAvatarUrl } from "@/utils/authors";
 import Image from "next/image";
 import { useId } from "react";
+import { getAuthorsFromIds, getAvatarUrl } from "../utils";
 
 interface AuthorBannerProps {
   authorIds?: string[];

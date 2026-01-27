@@ -1,15 +1,15 @@
 "use client";
 
+import { DEFAULT_BLOG_IMAGE } from "@/config/constants";
+import { DEFAULT_AVATAR, getAuthorsFromIds, getAvatarUrl } from "@/features/authors";
 import { blogSource } from "@/lib/source";
-import { DEFAULT_AVATAR, getAuthorsFromIds, getAvatarUrl } from "@/utils/authors";
-import { DEFAULT_BLOG_IMAGE } from "@/utils/constants";
-import { estimateReadingTime } from "@/utils/reading-time";
 import type { StructuredData } from "fumadocs-core/mdx-plugins";
 import Image from "next/image";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { Suspense, useId } from "react";
-import { BlogPagination } from "./blog-pagination";
+import { estimateReadingTime } from "../utils";
+import { BlogPagination } from "./BlogPagination";
 
 const POSTS_PER_PAGE = 15;
 

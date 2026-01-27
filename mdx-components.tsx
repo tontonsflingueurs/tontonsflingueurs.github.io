@@ -1,5 +1,5 @@
-import { BlogCards } from "@/components/blog-cards";
-import { ZoomableImage } from "@/components/zoomable-image";
+import { BlogCards } from "@/features/blog";
+import { ZoomableImage } from "@/features/images";
 import { Accordion, Accordions } from "fumadocs-ui/components/accordion";
 import { ImageZoom } from "fumadocs-ui/components/image-zoom";
 import defaultMdxComponents from "fumadocs-ui/mdx";
@@ -14,7 +14,7 @@ export function getMDXComponents(components?: MDXComponents): MDXComponents {
     ZoomableImage,
     img: (props) => <ImageZoom {...(props as any)} />,
     strong: (props) => <strong className="text-fd-primary font-bold" {...props} />,
-    em: (props) => <em className="text-fd-italic italic" {...props} />,
+    em: (props) => <em className="text-(--color-fd-italic) italic" {...props} />,
     ...components,
   };
 }

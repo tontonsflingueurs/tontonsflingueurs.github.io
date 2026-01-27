@@ -1,14 +1,15 @@
 "use client";
 
-import { DEFAULT_THEME, STORAGE_KEY, VALID_THEMES, type ColorTheme } from "@/lib/themes";
-import { createContext, useCallback, useContext, useEffect, useSyncExternalStore, type ReactNode } from "react";
+import { createContext, useCallback, useEffect, useSyncExternalStore, type ReactNode } from "react";
+import { DEFAULT_THEME, STORAGE_KEY, VALID_THEMES } from "./config";
+import type { ColorTheme } from "./types";
 
 interface ColorThemeContextValue {
   colorTheme: ColorTheme;
   setColorTheme: (theme: ColorTheme) => void;
 }
 
-const ColorThemeContext = createContext<ColorThemeContextValue | undefined>(undefined);
+export const ColorThemeContext = createContext<ColorThemeContextValue | undefined>(undefined);
 
 function getStoredTheme(): ColorTheme {
   if (typeof window === "undefined") return DEFAULT_THEME;
@@ -64,13 +65,3 @@ export function ColorThemeProvider({ children }: { children: ReactNode }) {
 
   return <ColorThemeContext.Provider value={{ colorTheme, setColorTheme }}>{children}</ColorThemeContext.Provider>;
 }
-
-export function useColorTheme() {
-  const context = useContext(ColorThemeContext);
-  if (context === undefined) {
-    throw new Error("useColorTheme must be used within a ColorThemeProvider");
-  }
-  return context;
-}
-
-export type { ColorTheme };

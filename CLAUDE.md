@@ -22,9 +22,65 @@ ALWAYS use bun for commands. NEVER use npm/yarn/pnpm.
 ## Code Style
 
 - **Comments**: ALWAYS write comments in French only. NEVER write comments in English.
+- **File naming**: Use camelCase for `.ts`/`.tsx` files (e.g., `BlogCards.tsx`, `useColorTheme.ts`). Kebab-case only for `.mdx` files and assets.
 - Code should be self-explanatory when possible, with French comments for complex logic.
 
 ## Architecture
+
+### Feature-Based Structure (Bulletproof React)
+
+Le code est organisé par domaine dans `features/` :
+
+```
+features/
+├── authors/              # Gestion des auteurs
+│   ├── components/       # AuthorBanner.tsx
+│   ├── data.ts           # Registre des auteurs
+│   ├── types.ts          # Author, AuthorId
+│   ├── utils.ts          # getAuthor, getAvatarUrl
+│   └── index.ts          # Barrel export
+├── blog/                 # Composants et utils blog
+│   ├── components/       # BlogCards.tsx, BlogPagination.tsx
+│   ├── utils.ts          # estimateReadingTime
+│   └── index.ts
+├── fumadocs/             # Composants liés à Fumadocs
+│   ├── components/       # PageActions.tsx
+│   └── index.ts
+├── theme/                # Système de thèmes couleur
+│   ├── components/       # ColorThemeSwitcher.tsx
+│   ├── hooks/            # useColorTheme.ts
+│   ├── config.ts         # Définition des 7 thèmes
+│   ├── types.ts          # ColorTheme type
+│   ├── provider.tsx      # ColorThemeProvider
+│   └── index.ts
+└── images/               # Gestion des images
+    ├── components/       # ZoomableImage.tsx
+    ├── data.ts           # Registre images (généré)
+    ├── utils.ts          # Extensions images
+    └── index.ts
+```
+
+**Convention d'import** - Toujours importer depuis l'index de la feature :
+
+```typescript
+// Correct
+import { getAuthor, AuthorBanner } from "@/features/authors";
+import { BlogCards } from "@/features/blog";
+import { ColorThemeProvider } from "@/features/theme";
+import { PageActions } from "@/features/fumadocs";
+
+// Éviter
+import { getAuthor } from "@/features/authors/utils";
+```
+
+### Dossiers Racine
+
+- `app/` - Routes Next.js uniquement
+- `config/` - Configuration globale (constants.ts, dev.ts, layout.tsx)
+- `content/` - ⚠️ INTOUCHABLE - Collections Fumadocs MDX
+- `lib/` - Loaders Fumadocs (source.ts) et plugins MDX (remarkFrenchTypography.ts)
+- `public/` - ⚠️ INTOUCHABLE - Assets statiques
+- `scripts/` - Scripts de maintenance
 
 ### Two Content Collections (source.config.ts)
 
@@ -33,7 +89,7 @@ ALWAYS use bun for commands. NEVER use npm/yarn/pnpm.
 
 2. **Blog** (`content/blog/`) → `/blog` routes
    - Extended frontmatter: title, description, date, authors[], image, tags[]
-   - Authors map to `utils/authors.ts`
+   - Authors map to `features/authors`
 
 Both loaded via `lib/source.ts` which exports `source` and `blogSource`.
 
@@ -43,7 +99,7 @@ Both loaded via `lib/source.ts` which exports `source` and `blogSource`.
 
 **To add a theme:**
 
-1. Add entry to `lib/themes.ts`
+1. Add entry to `features/theme/config.ts`
 2. Add CSS variables in `global.css` under `[data-theme="name"]`
 3. Update `validThemes` in `app/layout.tsx` inline script
 
@@ -62,15 +118,15 @@ Custom components available in MDX:
 
 ### Remark Plugins (source.config.ts)
 
-- `remark-french-typography` - Auto-adds non-breaking spaces before `: ; ! ?` and around `« »`
+- `remarkFrenchTypography` - Auto-adds non-breaking spaces before `: ; ! ?` and around `« »`
 
 ### Key Files
 
 - `source.config.ts` - Collection schemas, MDX plugins
 - `lib/source.ts` - Fumadocs loaders
-- `lib/themes.ts` - Theme definitions (single source of truth)
-- `utils/authors.ts` - Author registry with GitHub avatars
-- `components/layout-shared.tsx` - Shared navbar config
+- `features/theme/config.ts` - Theme definitions (single source of truth)
+- `features/authors/data.ts` - Author registry with GitHub avatars
+- `config/layout.tsx` - Shared navbar config
 
 ## Content Management
 

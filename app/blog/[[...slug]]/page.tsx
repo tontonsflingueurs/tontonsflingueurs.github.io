@@ -1,11 +1,11 @@
-import { AuthorBanner } from "@/components/author-banner";
-import { PageActions } from "@/components/page-actions";
-import { ZoomableImage } from "@/components/zoomable-image";
+import { DEFAULT_BLOG_IMAGE, GITHUB_REPO } from "@/config/constants";
+import { devTitle } from "@/config/dev";
+import { AuthorBanner } from "@/features/authors";
+import { estimateReadingTime } from "@/features/blog";
+import { PageActions } from "@/features/fumadocs";
+import { ZoomableImage } from "@/features/images";
 import { blogSource } from "@/lib/source";
 import { getMDXComponents } from "@/mdx-components";
-import { DEFAULT_BLOG_IMAGE, GITHUB_REPO } from "@/utils/constants";
-import { devTitle } from "@/utils/dev-title";
-import { estimateReadingTime } from "@/utils/reading-time";
 import { DocsBody, DocsDescription, DocsPage, DocsTitle, PageLastUpdate } from "fumadocs-ui/page";
 import type { Metadata } from "next";
 import { notFound, redirect } from "next/navigation";

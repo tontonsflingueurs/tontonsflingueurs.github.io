@@ -1,7 +1,7 @@
 import { defineConfig, defineDocs, frontmatterSchema, metaSchema } from "fumadocs-mdx/config";
 import lastModified from "fumadocs-mdx/plugins/last-modified";
 import { z } from "zod";
-import remarkFrenchTypography from "./lib/remark-french-typography";
+import remarkFrenchTypography from "./lib/remarkFrenchTypography";
 
 // Schema etendu pour le blog
 const blogFrontmatterSchema = frontmatterSchema.extend({

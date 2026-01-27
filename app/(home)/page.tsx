@@ -1,4 +1,4 @@
-import { BlogCards } from "@/components/blog-cards";
+import { BlogCards } from "@/features/blog";
 import Link from "next/link";
 
 export default function HomePage() {

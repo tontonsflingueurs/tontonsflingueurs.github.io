@@ -4,10 +4,13 @@
  * Script de normalisation des articles de blog selon le template
  *
  * Corrections appliquées :
- * - Remplace ** Titre ** par ### 🔸 Titre
- * - Ajoute des séparateurs --- entre les sections ##
- * - Normalise les emojis 🔸 dans les titres H3
- * - Supprime les espaces excessifs
+ * - Supprime les ** dans les descriptions du frontmatter
+ * - Supprime les doublons titre/description après l'image
+ * - Convertit les titres en gras MAJUSCULES en H2
+ * - Convertit les catégories connues en H2
+ * - Convertit les éléments (niveaux, unités, sorts) en H3 🔸
+ * - Ajoute des séparateurs --- entre les sections H2
+ * - Normalise les espaces et "Pourquoi ?"
  */
 
 import { readdir, readFile, writeFile } from "node:fs/promises";
@@ -16,69 +19,195 @@ import { join } from "node:path";
 const BLOG_DIR = join(process.cwd(), "content/blog/articles");
 
 /**
+ * Catégories typiques d'articles d'équilibrage (pour conversion en H2)
+ */
+const CATEGORY_PATTERNS = [
+  /^bonus$/i,
+  /^sorts?$/i,
+  /^artefacts?$/i,
+  /^unités?$/i,
+  /^perks?\s*(\(.+\))?$/i,
+  /^atouts?$/i,
+  /^héros$/i,
+  /^talents?\s+(de\s+)?/i,
+  /^caractéristiques/i,
+  /^nouvelle\s+unité/i,
+  /^nouveaux?\s+/i,
+  /^changements?/i,
+];
+
+/**
+ * Vérifie si un titre est une catégorie (devrait être H2)
+ */
+function isCategory(title: string): boolean {
+  const cleanTitle = title.trim();
+  return CATEGORY_PATTERNS.some((pattern) => pattern.test(cleanTitle));
+}
+
+/**
+ * Convertit un titre MAJUSCULES en Title Case
+ */
+function toTitleCase(str: string): string {
+  return str.toLowerCase().replace(/(^|\s|[–-])\p{L}/gu, (char) => char.toUpperCase());
+}
+
+/**
+ * Extrait la description du frontmatter
+ */
+function extractDescription(content: string): string | null {
+  const match = content.match(/^description:\s*"([^"]+)"/m);
+  if (match) {
+    // Retirer les ** si présents
+    return match[1].replace(/^\*\*/, "").replace(/\*\*$/, "").trim();
+  }
+  return null;
+}
+
+/**
  * Normalise le contenu d'un article selon le template
  */
 function normalizeArticle(content: string): string {
   let normalized = content;
 
-  // 1. Normaliser les titres en gras vers H3 avec 🔸
-  // Patterns à remplacer : **Nom (Amélioré)**, **Nom (Affaibli)**, **Nom**
-  normalized = normalized.replace(/^\*\*\s*([^*\n]+?)\s*\(Améliorée?\)\s*\*\*/gm, "### 🔸 $1 (Amélioré)");
-  normalized = normalized.replace(/^\*\*\s*([^*\n]+?)\s*\(Affaiblie?\)\s*\*\*/gm, "### 🔸 $1 (Affaibli)");
-  normalized = normalized.replace(/^\*\*\s*([^*\n]+?)\s*\(Ajusté\)\s*\*\*/gm, "### 🔸 $1 (Ajusté)");
+  // ============================================================
+  // ÉTAPE 0 : Nettoyer le frontmatter
+  // ============================================================
 
-  // 2. Normaliser les H3 existants avec emojis
-  // Remplacer ### 🔸 **Nom** 🔸 par ### 🔸 Nom
-  normalized = normalized.replace(/^###\s*🔸\s*\*\*\s*([^*\n]+?)\s*\*\*\s*🔸/gm, "### 🔸 $1");
-  // Remplacer ### **Nom** par ### 🔸 Nom
-  normalized = normalized.replace(/^###\s*\*\*\s*([^*\n]+?)\s*\*\*/gm, "### 🔸 $1");
-
-  // 3. Ajouter 🔸 si manquant dans les H3
-  normalized = normalized.replace(/^###\s+(?!🔸)([^\n]+)/gm, "### 🔸 $1");
-
-  // 4. Corriger les "Pourquoi ?" cassés sur plusieurs lignes
-  normalized = normalized.replace(
-    /\*\*\s*([0-9]+\s*%\s*→\s*[0-9]+\s*%)\s*\n\s*Pourquoi\s*\?\s*\*\*/gm,
-    "**$1**\n\n**Pourquoi ?**",
-  );
-
-  // 5. Ajouter des séparateurs --- avant les sections H2 (sauf si déjà présent)
-  normalized = normalized.replace(/\n(##\s+[^\n]+)/g, (match, title) => {
-    return `\n---\n${title}`;
+  // 0a. Supprimer tous les ** dans la description (gras non supporté dans frontmatter)
+  normalized = normalized.replace(/^(description:\s*")([^"]*)(")$/m, (_match, start, desc, end) => {
+    return start + desc.replace(/\*\*/g, "") + end;
   });
 
-  // 6. Supprimer les doubles séparateurs
+  // 0b. Supprimer les doublons après l'image (texte qui répète la description)
+  const description = extractDescription(normalized);
+  if (description) {
+    // Pattern : après ZoomableImage, supprimer la ligne qui répète la description
+    // Avec ou sans ** autour
+    const escapedDesc = description.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    const duplicatePattern = new RegExp(`(<ZoomableImage[^>]*/>\\s*\\n\\n?)\\*\\*${escapedDesc}\\*\\*\\n*`, "i");
+    normalized = normalized.replace(duplicatePattern, "$1");
+
+    // Aussi sans les **
+    const duplicatePatternNoStars = new RegExp(`(<ZoomableImage[^>]*/>\\s*\\n\\n?)${escapedDesc}\\n*`, "i");
+    normalized = normalized.replace(duplicatePatternNoStars, "$1");
+  }
+
+  // ============================================================
+  // ÉTAPE 1 : Convertir les titres MAJUSCULES en gras → H2
+  // ============================================================
+
+  // Titres entièrement en MAJUSCULES entre ** → H2 (Title Case)
+  normalized = normalized.replace(/^\*\*([A-ZÉÈÊËÀÂÔÙÛÇÏ\s–\-—:]+)\*\*$/gm, (_match, title) => {
+    const cleanTitle = title.trim();
+    // Si c'est tout en majuscules, convertir en Title Case
+    if (cleanTitle === cleanTitle.toUpperCase()) {
+      return `## ${toTitleCase(cleanTitle)}`;
+    }
+    return `## ${cleanTitle}`;
+  });
+
+  // ============================================================
+  // ÉTAPE 2 : Convertir les H3 qui sont des catégories → H2
+  // ============================================================
+
+  // ### 🔸 Talents de la Valkyrie → ## Talents de la Valkyrie
+  normalized = normalized.replace(/^###\s*🔸?\s*(.+)$/gm, (_match, title) => {
+    const cleanTitle = title.trim().replace(/:$/, ""); // Enlever : final
+    if (isCategory(cleanTitle)) {
+      return `## ${cleanTitle}`;
+    }
+    // Garder comme H3 avec 🔸
+    return `### 🔸 ${cleanTitle}`;
+  });
+
+  // ============================================================
+  // ÉTAPE 3 : Convertir les patterns d'éléments en gras → H3 🔸
+  // ============================================================
+
+  // **Niveau 9.** ou **Niveau 9** → ### 🔸 Niveau 9
+  normalized = normalized.replace(/^\*\*Niveau\s+(\d+)\.?\*\*$/gm, "### 🔸 Niveau $1");
+
+  // **Nom (Amélioré)** → ### 🔸 Nom (Amélioré)
+  normalized = normalized.replace(
+    /^\*\*\s*([^*\n]+?)\s*\((Améliorée?|Affaiblie?|Ajusté)\)\s*\*\*$/gm,
+    (_match, name, status) => {
+      // Normaliser le statut
+      let normalizedStatus = status;
+      if (status.match(/Améliorée?/i)) normalizedStatus = "Amélioré";
+      if (status.match(/Affaiblie?/i)) normalizedStatus = "Affaibli";
+      return `### 🔸 ${name.trim()} (${normalizedStatus})`;
+    },
+  );
+
+  // **Nom d'élément** en début de ligne (potentiel H3)
+  // Ne pas convertir si c'est une catégorie
+  normalized = normalized.replace(/^\*\*([^*\n]+)\*\*$/gm, (_match, title) => {
+    const cleanTitle = title.trim();
+
+    // Si c'est une catégorie, convertir en H2
+    if (isCategory(cleanTitle)) {
+      return `## ${cleanTitle}`;
+    }
+
+    // Si c'est "Pourquoi ?", ne pas convertir
+    if (cleanTitle.toLowerCase().includes("pourquoi")) {
+      return `_${cleanTitle}_`;
+    }
+
+    // Sinon, vérifier si c'est un nom d'élément (unité, sort, etc.)
+    // Les éléments sont généralement suivis de stats ou descriptions
+    return `### 🔸 ${cleanTitle}`;
+  });
+
+  // ============================================================
+  // ÉTAPE 4 : Nettoyage des H3
+  // ============================================================
+
+  // Assurer que tous les H3 ont 🔸 (sauf ceux convertis en H2)
+  normalized = normalized.replace(/^###\s+(?!🔸)([^\n]+)/gm, "### 🔸 $1");
+
+  // Supprimer les 🔸 doubles
+  normalized = normalized.replace(/🔸\s*🔸/g, "🔸");
+
+  // Supprimer les : à la fin des titres H3
+  normalized = normalized.replace(/^(### 🔸 [^\n]+):$/gm, "$1");
+
+  // ============================================================
+  // ÉTAPE 5 : Séparateurs entre sections H2
+  // ============================================================
+
+  // Ajouter --- avant chaque H2 (sauf si déjà présent)
+  normalized = normalized.replace(/\n(?!---\n)(## [^\n]+)/g, "\n---\n$1");
+
+  // Supprimer les doubles séparateurs
   normalized = normalized.replace(/---\n+---/g, "---");
 
-  // 7. Supprimer les séparateurs juste après le frontmatter
+  // Supprimer le séparateur juste après le frontmatter
   normalized = normalized.replace(/(---\n\n)---\n/g, "$1");
 
-  // 8. Normaliser les espaces : max 2 lignes vides consécutives
-  normalized = normalized.replace(/\n{4,}/g, "\n\n\n");
+  // ============================================================
+  // ÉTAPE 6 : Normalisation finale
+  // ============================================================
 
-  // 9. Supprimer les espaces en fin de ligne
-  normalized = normalized.replace(/ +$/gm, "");
-
-  // 10. S'assurer qu'il y a une ligne vide avant chaque H3
-  normalized = normalized.replace(/([^\n])\n(### 🔸)/g, "$1\n\n$2");
-
-  // 11. Normaliser "Pourquoi ?" en italique coloré
+  // Normaliser "Pourquoi ?" en italique
   normalized = normalized.replace(/\*\*\s*Pourquoi\s*\?\s*\*\*/gi, "_Pourquoi ?_");
-  // Corriger les "Pourquoi ?" en H4 italic
   normalized = normalized.replace(/^####\s*_Pourquoi\s*\?_$/gm, "\n_Pourquoi ?_");
 
-  // 12. Supprimer les 🔸 des sections H3 qui sont en majuscules (ce sont des catégories)
-  // Ces sections doivent rester en H3 mais sans 🔸
-  normalized = normalized.replace(/^### 🔸 ([A-ZÉÈÊËÀÂÔÙÛÇ\s]+)$/gm, "### $1");
+  // Normaliser les espaces : max 2 lignes vides consécutives
+  normalized = normalized.replace(/\n{4,}/g, "\n\n\n");
 
-  // 13. Corriger les titres avec emoji alternatifs (▪️, ▫️, etc.)
+  // Supprimer les espaces en fin de ligne
+  normalized = normalized.replace(/ +$/gm, "");
+
+  // S'assurer qu'il y a une ligne vide avant chaque H2 et H3
+  normalized = normalized.replace(/([^\n])\n(##\s)/g, "$1\n\n$2");
+  normalized = normalized.replace(/([^\n])\n(### 🔸)/g, "$1\n\n$2");
+
+  // Corriger les titres avec emoji alternatifs (▪️, ▫️, etc.)
   normalized = normalized.replace(/^▪️\s*\*\*\s*([^*\n]+?)\s*\*\*$/gm, "### 🔸 $1");
 
-  // 14. Corriger les astérisques multiples orphelins
+  // Corriger les astérisques multiples orphelins
   normalized = normalized.replace(/\*\*\*\*/g, "**");
-
-  // 15. Corriger les formatages cassés avec \*\* orphelins
-  normalized = normalized.replace(/\\\*\\\*/g, "**");
 
   return normalized;
 }
